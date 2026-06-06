@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LTP Calculator - Live Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .bullish { color: #00a86b; font-weight: bold; }
+        .bearish { color: #ff3b30; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        td, th { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f0f0f0; }
+        .value { font-size: 1.3em; font-weight: bold; color: #0066cc; }
+        .status { padding: 5px 10px; border-radius: 5px; display: inline-block; }
+        .status.strong { background: #d4edda; color: #155724; }
+        .status.wtt { background: #fff3cd; color: #856404; }
+        .status.wtb { background: #f8d7da; color: #721c24; }
+        h1 { color: #333; }
+        .live-badge { background: #ff4444; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .last-update { font-size: 12px; color: #999; text-align: center; margin-top: 20px; }
+        .refresh-btn { background: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .refresh-btn:hover { background: #0052a3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 LTP Calculator <span class="live-badge">LIVE</span></h1>
+        <p><small>Investor Daddy Style | Updates every 3 minutes via GitHub Actions</small></p>
+        <div id="loading">Loading latest data... ⏳</div>
+        <div id="dashboard" style="display:none;"></div>
+        <div class="last-update" id="last-update"></div>
+        <button class="refresh-btn" onclick="loadLatest()">🔄 Refresh Now</button>
+    </div>
+
+    <script>
+        function getStatusClass(state) {
+            if (state === 'STRONG') return 'strong';
+            if (state === 'WTT') return 'wtt';
+            return 'wtb';
+        }
+
+        function formatTime(isoString) {
+            return new Date(isoString).toLocaleString();
+        }
+
+        function updateDashboard(data) {
+            const biasClass = data.market_bias.includes('BULLISH') ? 'bullish' : (data.market_bias.includes('BEARISH') ? 'bearish' : '');
+            
+            const html = `
+                <p><strong>🕐 Recorded at:</strong> ${formatTime(data.timestamp)}</p>
+                <p><strong>📈 Spot Price:</strong> ${data.spot_price} | <strong>🎯 ATM Strike:</strong> ${data.atm_strike}</p>
+                
+                <h3>🔴 Resistance (Call Side)</h3>
+                <table>
+                    <tr><th>Strike</th><td class="value">${data.resistance.strike}</td></tr>
+                    <tr><th>State</th><td><span class="status ${getStatusClass(data.resistance.state)}">${data.resistance.state}</span></td></tr>
+                    <tr><th>Strength %</th><td>${data.resistance.strength}%</td></tr>
+                    <tr><th>EOR (Extension of Resistance)</th><td class="value">${data.resistance.eor}</td></tr>
+                </table>
+                
+                <h3>🟢 Support (Put Side)</h3>
+                <table>
+                    <tr><th>Strike</th><td class="value">${data.support.strike}</td></tr>
+                    <tr><th>State</th><td><span class="status ${getStatusClass(data.support.state)}">${data.support.state}</span></td></tr>
+                    <tr><th>Strength %</th><td>${data.support.strength}%</td></tr>
+                    <tr><th>EOS (Extension of Support)</th><td class="value">${data.support.eos}</td></tr>
+                </table>
+                
+                <h2>COA Scenario ${data.coa_scenario}</h2>
+                <p class="${biasClass}" style="font-size: 1.2em;"><strong>Market Bias:</strong> ${data.market_bias}</p>
+                <p><strong>📋 Trading Rule:</strong> ${data.trading_rule}</p>
+                <p><strong>⚠️ State of Confusion:</strong> ${data.soc_active ? 'ACTIVE - Stay flat!' : 'Inactive'}</p>
+            `;
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('dashboard').innerHTML = html;
+            document.getElementById('last-update').innerHTML = `Last updated: ${formatTime(data.timestamp)} | Next update in ~3 minutes`;
+        }
+
+        async function loadLatest() {
+            try {
+                document.getElementById('loading').innerHTML = 'Loading latest data... ⏳';
+                document.getElementById('dashboard').style.display = 'none';
+                
+                // Fetch the latest JSON from GitHub
+                const response = await fetch('data/ltp_results.json?v=' + Date.now());
+                if (!response.ok) throw new Error('No data yet');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                document.getElementById('loading').innerHTML = '⏳ Waiting for first data update. The GitHub Action runs every 3 minutes...<br><br>This may take 2-3 minutes after deployment.<br><br>Click "Refresh Now" to check again.';
+                console.error('Error:', error);
+            }
+        }
+        
+        // Load initial data
+        loadLatest();
+        
+        // Auto-refresh every 30 seconds (to catch updates quickly)
+        setInterval(loadLatest, 30000);
+    </script>
+</body>
+</html>

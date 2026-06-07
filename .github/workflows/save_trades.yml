@@ -2,7 +2,7 @@ name: Save Trades to GitHub
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/5 3-10 * * 1-5'   # Every 5 min, Mon-Fri, 3:00-10:59 UTC
   workflow_dispatch:
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
       - name: Run trade saver
         run: python scripts/save_trades.py
       
-      - name: Commit and push (force when needed)
+      - name: Commit and push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"

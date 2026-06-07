@@ -1,64 +1,432 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LTP Calculator – Option Data DNA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LTP Calculator | Investor Daddy Style | Fintech Dashboard</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a1a;
-            color: #eee;
+            background: linear-gradient(135deg, #0a0e1a 0%, #0f1422 100%);
+            font-family: 'Inter', 'Segoe UI', 'Poppins', sans-serif;
+            min-height: 100vh;
             padding: 20px;
+            color: #eef2ff;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #16213e;
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1f2e;
             border-radius: 10px;
-            padding: 20px;
         }
-        pre {
-            background: #0f0f23;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
+        ::-webkit-scrollbar-thumb {
+            background: #2d3a5e;
+            border-radius: 10px;
         }
-        .live {
-            background: #ff4444;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b4a6e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffffff, #7c9bff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-area p {
+            font-size: 0.75rem;
+            color: #7b8baa;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            background: rgba(15, 25, 45, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            border: 1px solid rgba(72, 187, 255, 0.2);
+        }
+
+        .live-dot {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
             animation: pulse 1.5s infinite;
+            margin-right: 8px;
         }
+
         @keyframes pulse {
-            50% { opacity: 0.6; }
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.6; transform: scale(1.1);}
+        }
+
+        .update-time {
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #8a99b9;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: rgba(18, 24, 40, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 20px 18px;
+            border: 1px solid rgba(66, 153, 225, 0.15);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .kpi-card:hover {
+            border-color: rgba(66, 153, 225, 0.4);
+            transform: translateY(-2px);
+            background: rgba(22, 30, 50, 0.8);
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+            color: #7a8bb0;
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-size: 1.9rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.5px;
+            color: #f0f4ff;
+        }
+
+        .kpi-unit {
+            font-size: 0.8rem;
+            color: #7c8db0;
+            font-weight: 400;
+        }
+
+        /* Main Panels */
+        .dual-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .panel {
+            background: rgba(12, 16, 28, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #5c6e97;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .level-row:last-child {
+            border-bottom: none;
+        }
+
+        .level-label {
+            font-weight: 500;
+        }
+
+        .level-number {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .support-value { color: #2ecc71; }
+        .resistance-value { color: #e74c3c; }
+        .eos-value { color: #2ecc71; }
+        .eor-value { color: #e74c3c; }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .scenario-badge {
+            background: #3b4a6e;
+            color: white;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #2d3748;
+            margin-top: 8px;
+        }
+
+        .action-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6c7ea0;
+        }
+
+        .action-decision {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+
+        .buy-ce { color: #2ecc71; }
+        .buy-pe { color: #e74c3c; }
+        .wait { color: #f39c12; }
+        .no-trade { color: #95a5a6; }
+
+        .insight-text {
+            font-size: 0.85rem;
+            color: #a0b0d0;
+            max-width: 600px;
+            margin: 12px auto 0;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #4a5a7a;
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 780px) {
+            .dual-panel {
+                grid-template-columns: 1fr;
+            }
+            .kpi-value {
+                font-size: 1.4rem;
+            }
+            .action-decision {
+                font-size: 1.5rem;
+            }
+            .level-number {
+                font-size: 1.1rem;
+            }
+        }
+
+        .glow-text {
+            text-shadow: 0 0 5px rgba(46,204,113,0.3);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="live">🔴 LIVE</div>
-        <h2>📊 LTP Calculator – Option Data DNA</h2>
-        <div id="loading">Loading market data...</div>
-        <pre id="output" style="display:none;"></pre>
-        <div id="footer"></div>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-area">
+            <h1>📊 LTP CALCULATOR</h1>
+            <p>Investor Daddy Style | COA 1.0 Framework</p>
+        </div>
+        <div class="status-badge">
+            <span><span class="live-dot"></span> LIVE DATA</span>
+            <span class="update-time" id="updateTimestamp">Updating...</span>
+        </div>
     </div>
-    <script>
-        async function loadData() {
-            try {
-                const res = await fetch('data.json?v=' + Date.now());
-                if (!res.ok) throw new Error('No data yet');
-                const data = await res.json();
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('output').style.display = 'block';
-                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-                document.getElementById('footer').innerHTML = `Last updated: ${new Date().toLocaleTimeString()} | Next update in 3 min`;
-            } catch (err) {
-                document.getElementById('loading').innerHTML = 'Waiting for first update...';
-            }
+
+    <!-- KPI Row -->
+    <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card"><div class="kpi-label">SPOT PRICE</div><div class="kpi-value" id="spotValue">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">PUT/CALL RATIO</div><div class="kpi-value" id="pcrValue">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">COA SCENARIO</div><div class="kpi-value" id="scenarioValue">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">MARKET BIAS</div><div class="kpi-value" id="biasValue">---</div></div>
+    </div>
+
+    <!-- Support / Resistance & Levels -->
+    <div class="dual-panel">
+        <div class="panel">
+            <div class="panel-title">🟢 SUPPORT STRUCTURE</div>
+            <div class="level-row"><span class="level-label">Strike</span><span class="level-number support-value" id="supportStrike">---</span></div>
+            <div class="level-row"><span class="level-label">State</span><span class="badge" id="supportStateBadge">---</span></div>
+            <div class="level-row"><span class="level-label">OI Strength</span><span id="supportStrength">---</span></div>
+            <div class="level-row"><span class="level-label">EOS (Extension of Support)</span><span class="level-number eos-value" id="eosValue">---</span></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">🔴 RESISTANCE STRUCTURE</div>
+            <div class="level-row"><span class="level-label">Strike</span><span class="level-number resistance-value" id="resistanceStrike">---</span></div>
+            <div class="level-row"><span class="level-label">State</span><span class="badge" id="resistanceStateBadge">---</span></div>
+            <div class="level-row"><span class="level-label">OI Strength</span><span id="resistanceStrength">---</span></div>
+            <div class="level-row"><span class="level-label">EOR (Extension of Resistance)</span><span class="level-number eor-value" id="eorValue">---</span></div>
+        </div>
+    </div>
+
+    <!-- Trading Decision Panel -->
+    <div class="action-card">
+        <div class="action-title">📋 TRADING DECISION</div>
+        <div class="action-decision" id="tradeAction">---</div>
+        <div class="insight-text" id="insightMessage">Loading market context...</div>
+        <div class="insight-text" id="proximityAlert" style="margin-top: 8px; font-size: 0.75rem;"></div>
+    </div>
+
+    <div class="footer-note">
+        ⚡ Data refreshes every 3 minutes · Source: Option Chain (NSE via Moneycontrol)<br>
+        First hit to EOS/EOR is generally safe. Subsequent hits increase breakout risk.
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // FETCH DATA FROM GITHUB JSON (option-data.dna)
+    // ============================================================
+    const JSON_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data.json';
+
+    async function loadLtpData() {
+        try {
+            const response = await fetch(`${JSON_URL}?t=${Date.now()}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            renderDashboard(data);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('tradeAction').innerHTML = '⚠️ NO DATA';
+            document.getElementById('insightMessage').innerHTML = 'Failed to fetch live data. Check GitHub or Edge Function.';
         }
-        loadData();
-        setInterval(loadData, 30000);
-    </script>
+    }
+
+    function renderDashboard(d) {
+        // KPI
+        document.getElementById('spotValue').innerHTML = `₹ ${d.spot_price?.toLocaleString() || '---'}`;
+        document.getElementById('pcrValue').innerHTML = d.pcr?.toFixed(3) || '---';
+        document.getElementById('scenarioValue').innerHTML = `SCENARIO ${d.coa_scenario || '?'}`;
+        
+        const bias = d.market_bias || 'NEUTRAL';
+        const biasClass = bias === 'BULLISH' ? 'bullish' : (bias === 'BEARISH' ? 'bearish' : 'neutral');
+        document.getElementById('biasValue').innerHTML = bias;
+        document.getElementById('biasValue').style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
+
+        // Support
+        document.getElementById('supportStrike').innerHTML = d.support?.strike || '---';
+        document.getElementById('supportStrength').innerHTML = `${d.support?.strength?.toFixed(1) || '0'}%`;
+        const supState = d.support?.state || '---';
+        document.getElementById('supportStateBadge').innerHTML = supState;
+        document.getElementById('supportStateBadge').style.background = supState === 'STRONG' ? '#1e3a2e' : (supState === 'MODERATE' ? '#4a3a1a' : '#3a1a1a');
+        
+        // Resistance
+        document.getElementById('resistanceStrike').innerHTML = d.resistance?.strike || '---';
+        document.getElementById('resistanceStrength').innerHTML = `${d.resistance?.strength?.toFixed(1) || '0'}%`;
+        const resState = d.resistance?.state || '---';
+        document.getElementById('resistanceStateBadge').innerHTML = resState;
+        document.getElementById('resistanceStateBadge').style.background = resState === 'STRONG' ? '#3a1e1e' : (resState === 'MODERATE' ? '#4a3a1a' : '#1e2e3a');
+
+        // Levels
+        document.getElementById('eosValue').innerHTML = d.levels?.eos?.toFixed(2) || '---';
+        document.getElementById('eorValue').innerHTML = d.levels?.eor?.toFixed(2) || '---';
+
+        // Trading Action
+        const action = d.trading_action || 'WAIT';
+        const actionElem = document.getElementById('tradeAction');
+        actionElem.innerHTML = action;
+        actionElem.className = `action-decision ${action === 'BUY CE' ? 'buy-ce' : (action === 'BUY PE' ? 'buy-pe' : (action === 'WAIT' ? 'wait' : 'no-trade'))}`;
+
+        // Insight message
+        let msg = '';
+        if (d.coa_scenario === 1) msg = '📊 Rangebound market. Avoid middle zone. Trade only at EOS or EOR.';
+        else if (d.coa_scenario === 2) msg = '📈 Mild Bullish (STRONG + WTT). Buy CE on dips / EOS.';
+        else if (d.coa_scenario === 3) msg = '📉 Mild Bearish (STRONG + WTB). Buy PE on rises / EOR.';
+        else if (d.coa_scenario === 4) msg = '🟢 Bullish momentum (WTT + STRONG). Buy CE at EOS.';
+        else if (d.coa_scenario === 5) msg = '🚀 HIGHLY BULLISH – Rocket Market. Aggressive CE buying.';
+        else if (d.coa_scenario === 6) msg = '🌀 Confused/Chaotic. NO TRADE until one side becomes STRONG.';
+        else if (d.coa_scenario === 7) msg = '🔻 Bearish pressure (WTB + STRONG). Buy PE at EOR.';
+        else if (d.coa_scenario === 8) msg = '⚡ Whiplash Range – NO TRADE. High premium decay risk.';
+        else if (d.coa_scenario === 9) msg = '💀 BLOOD BATH – Highly Bearish. Aggressive PE buying.';
+        else msg = '⚖️ No clear structure. Wait for confirmation.';
+        
+        document.getElementById('insightMessage').innerHTML = msg;
+        
+        // Proximity alert
+        let alertMsg = '';
+        if (d.near_eos) alertMsg = '⚠️ PRICE NEAR EOS – Watch for bounce / breakdown. FIRST HIT is safest.';
+        else if (d.near_eor) alertMsg = '⚠️ PRICE NEAR EOR – Watch for rejection / breakout. FIRST HIT is safest.';
+        else alertMsg = '📍 Price is between EOS and EOR. Wait for level test.';
+        document.getElementById('proximityAlert').innerHTML = alertMsg;
+        
+        // Timestamp
+        if (d.timestamp) {
+            const timeStr = new Date(d.timestamp).toLocaleTimeString();
+            document.getElementById('updateTimestamp').innerHTML = `⏱️ ${timeStr}`;
+        }
+    }
+
+    // Load and refresh every 30 seconds
+    loadLtpData();
+    setInterval(loadLtpData, 30000);
+</script>
 </body>
 </html>

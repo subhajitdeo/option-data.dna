@@ -1,18 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>LTP Calculator</title>
-    <script>
-        async function load() {
-            const res = await fetch('data.json?v=' + Date.now());
-            const data = await res.json();
-            document.getElementById('output').innerHTML = JSON.stringify(data, null, 2);
+    <title>LTP Calculator – Option Data DNA</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a1a;
+            color: #eee;
+            padding: 20px;
         }
-        load();
-        setInterval(load, 30000);
-    </script>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        pre {
+            background: #0f0f23;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .live {
+            background: #ff4444;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            50% { opacity: 0.6; }
+        }
+    </style>
 </head>
 <body>
-    <pre id="output">Loading...</pre>
+    <div class="container">
+        <div class="live">🔴 LIVE</div>
+        <h2>📊 LTP Calculator – Option Data DNA</h2>
+        <div id="loading">Loading market data...</div>
+        <pre id="output" style="display:none;"></pre>
+        <div id="footer"></div>
+    </div>
+    <script>
+        async function loadData() {
+            try {
+                const res = await fetch('data.json?v=' + Date.now());
+                if (!res.ok) throw new Error('No data yet');
+                const data = await res.json();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('output').style.display = 'block';
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('footer').innerHTML = `Last updated: ${new Date().toLocaleTimeString()} | Next update in 3 min`;
+            } catch (err) {
+                document.getElementById('loading').innerHTML = 'Waiting for first update...';
+            }
+        }
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
 </body>
 </html>

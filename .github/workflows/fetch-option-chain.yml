@@ -1,0 +1,27 @@
+name: Fetch Option Chain Data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # Every 5 minutes
+  workflow_dispatch:         # Manual trigger
+
+jobs:
+  fetch-option-chain:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Fetch Option Chain from Google Sheets
+        run: |
+          curl -L "https://docs.google.com/spreadsheets/d/1bJ_O34GMpjm3sHgxiaBR0bnFTJHWuFXbZfYppkg5KXc/export?format=tsv&gid=0" > data/option_chain.tsv
+          curl -L "https://docs.google.com/spreadsheets/d/1bJ_O34GMpjm3sHgxiaBR0bnFTJHWuFXbZfYppkg5KXc/export?format=csv&gid=1940171500" > data/spot_price.csv
+      
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/option_chain.tsv data/spot_price.csv
+          git diff --staged --quiet || git commit -m "Update option chain data - $(date -u '+%Y-%m-%d %H:%M:%S')"
+          git push

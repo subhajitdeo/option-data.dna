@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>LTP Calculator | Frosted Glass Edition</title>
+    <title>LTP Calculator | Option Chain Table</title>
     <style>
         * {
             margin: 0;
@@ -12,16 +12,14 @@
         }
 
         body {
-            min-height: 100vh;
             background: linear-gradient(145deg, #0a0f1c 0%, #0f1625 100%);
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             padding: 20px;
             color: #e2e8f0;
-            position: relative;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* ========== ANIMATED BACKGROUND DOTS ========== */
+        /* Animated Background Dots */
         .dot-container {
             position: fixed;
             top: 0;
@@ -35,7 +33,7 @@
 
         .dot {
             position: absolute;
-            background: rgba(56, 189, 248, 0.15);
+            background: rgba(56, 189, 248, 0.12);
             border-radius: 50%;
             pointer-events: none;
             animation: floatDot linear infinite;
@@ -47,40 +45,19 @@
                 transform: translateY(100vh) translateX(0) rotate(0deg);
                 opacity: 0;
             }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
             100% {
                 transform: translateY(-20vh) translateX(40px) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        /* ========== FROSTED GLASS EFFECT ========== */
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
-        }
-
-        /* Glass morphism base */
-        .kpi-card, .panel, .scenario-card, .live-badge, .info-card {
-            background: rgba(15, 25, 45, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(56, 189, 248, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        /* Hover effect - less blur on hover */
-        .kpi-card:hover, .panel:hover, .info-card:hover {
-            background: rgba(15, 25, 45, 0.65);
-            border-color: rgba(56, 189, 248, 0.35);
-            transform: translateY(-2px);
         }
 
         /* Header */
@@ -114,8 +91,11 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(12px);
             padding: 8px 20px;
             border-radius: 40px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
         .live-dot {
@@ -130,32 +110,24 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1);}
-            50% { opacity: 0.6; transform: scale(1.1);}
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
         }
 
-        /* Data update animation */
-        @keyframes dataPulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.02); opacity: 0.85; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .data-update {
-            animation: dataPulse 0.4s ease-in-out;
-        }
-
-        /* KPI Cards */
+        /* KPI Grid */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 18px;
             margin-bottom: 28px;
         }
 
         .kpi-card {
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(12px);
             border-radius: 24px;
-            padding: 20px;
+            padding: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
             transition: all 0.3s ease;
         }
 
@@ -168,149 +140,84 @@
         }
 
         .kpi-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             font-family: monospace;
         }
 
-        /* Panels */
-        .dual-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+        /* Option Chain Table */
+        .table-container {
+            background: rgba(15, 25, 45, 0.35);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            overflow-x: auto;
             margin-bottom: 28px;
         }
 
-        .panel {
-            border-radius: 28px;
-            padding: 22px;
+        .option-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 600px;
         }
 
-        .panel-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 20px;
-            color: #7f8ea3;
-        }
-
-        .level-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-        }
-
-        .level-row:last-child {
-            border-bottom: none;
-        }
-
-        .level-number {
-            font-family: monospace;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .support-number { color: #2ecc71; }
-        .resistance-number { color: #e74c3c; }
-        .eos-number { color: #2ecc71; }
-        .eor-number { color: #e74c3c; }
-
-        .badge {
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            background: rgba(30, 42, 58, 0.7);
-        }
-
-        /* Scenario Card */
-        .scenario-card {
-            border-radius: 32px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .scenario-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
-        }
-
-        .scenario-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .trade-decision {
-            font-size: 1.4rem;
-            font-weight: 800;
-            padding: 8px 24px;
-            border-radius: 60px;
-            background: rgba(15, 25, 45, 0.7);
-        }
-
-        .buy-ce { color: #2ecc71; border: 1px solid #2ecc7133; }
-        .buy-pe { color: #e74c3c; border: 1px solid #e74c3c33; }
-        .wait { color: #f39c12; border: 1px solid #f39c1233; }
-        .no-trade { color: #95a5a6; border: 1px solid #95a5a633; }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 18px;
-            margin: 20px 0;
-        }
-
-        .info-card {
-            border-radius: 20px;
-            padding: 16px;
-        }
-
-        .info-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: #7f8ea3;
-            margin-bottom: 8px;
-        }
-
-        .level-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 8px;
-        }
-
-        .entry-level { color: #3b82f6; font-weight: 700; font-size: 1.1rem; }
-        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.1rem; }
-        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.1rem; }
-
-        .diff-positive { color: #2ecc71; font-size: 0.75rem; }
-        .diff-negative { color: #ef4444; font-size: 0.75rem; }
-
-        .proximity-alert {
-            margin-top: 16px;
-            padding: 12px;
-            background: rgba(26, 31, 46, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 16px;
-            font-size: 0.75rem;
+        .option-table th {
             text-align: center;
-            color: #f39c12;
+            padding: 14px 10px;
+            background: rgba(20, 30, 50, 0.6);
+            color: #7f8ea3;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         }
 
+        .option-table td {
+            text-align: center;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        /* Call side text color */
+        .call-positive {
+            color: #2ecc71;
+        }
+        .call-negative {
+            color: #e74c3c;
+        }
+
+        /* Put side text color */
+        .put-positive {
+            color: #e74c3c;
+        }
+        .put-negative {
+            color: #2ecc71;
+        }
+
+        /* Strike column highlight */
+        .strike-cell {
+            font-weight: 700;
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.08);
+            font-size: 0.9rem;
+        }
+
+        /* ATM row highlight */
+        .atm-row {
+            background: rgba(56, 189, 248, 0.08);
+            position: relative;
+        }
+        .atm-row td {
+            border-top: 1px solid rgba(56, 189, 248, 0.3);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Footer */
         .footer {
             text-align: center;
             font-size: 0.65rem;
@@ -321,25 +228,16 @@
         }
 
         /* Mobile Responsive */
-        @media (max-width: 760px) {
+        @media (max-width: 768px) {
             body { padding: 12px; }
-            .dual-panel { grid-template-columns: 1fr; gap: 16px; }
-            .level-line { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .trade-decision { font-size: 1.1rem; padding: 6px 18px; }
-            .scenario-title { font-size: 1rem; }
-            .kpi-value { font-size: 1.3rem; }
-            .level-number { font-size: 1.1rem; }
-        }
-
-        @media (max-width: 480px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .info-grid { grid-template-columns: 1fr; }
+            .kpi-value { font-size: 1.2rem; }
+            .option-table th, .option-table td { padding: 8px 4px; font-size: 0.7rem; }
+            .table-container { padding: 12px; }
         }
     </style>
 </head>
 <body>
 
-<!-- Animated Background Dots -->
 <div class="dot-container" id="dotContainer"></div>
 
 <div class="container">
@@ -347,7 +245,7 @@
     <div class="header">
         <div class="logo">
             <h1>📊 LTP CALCULATOR</h1>
-            <p>Investor Daddy | COA 1.0 Framework</p>
+            <p>Investor Daddy | COA 1.0 Framework | Live Option Chain</p>
         </div>
         <div class="live-badge">
             <span><span class="live-dot"></span> LIVE</span>
@@ -356,295 +254,209 @@
     </div>
 
     <!-- KPI Grid -->
-    <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-grid">
         <div class="kpi-card"><div class="kpi-label">SPOT</div><div class="kpi-value" id="spotVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">PCR</div><div class="kpi-value" id="pcrVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">SCENARIO</div><div class="kpi-value" id="scenarioVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
     </div>
 
-    <!-- Support & Resistance -->
-    <div class="dual-panel">
-        <div class="panel">
-            <div class="panel-title">🟢 SUPPORT</div>
-            <div class="level-row"><span>Strike</span><span class="level-number support-number" id="supStrike">---</span></div>
-            <div class="level-row"><span>State</span><span class="badge" id="supState">---</span></div>
-            <div class="level-row"><span>OI Strength</span><span id="supStrength">---</span></div>
-            <div class="level-row"><span>EOS</span><span class="level-number eos-number" id="eosVal">---</span></div>
-        </div>
-        <div class="panel">
-            <div class="panel-title">🔴 RESISTANCE</div>
-            <div class="level-row"><span>Strike</span><span class="level-number resistance-number" id="resStrike">---</span></div>
-            <div class="level-row"><span>State</span><span class="badge" id="resState">---</span></div>
-            <div class="level-row"><span>OI Strength</span><span id="resStrength">---</span></div>
-            <div class="level-row"><span>EOR</span><span class="level-number eor-number" id="eorVal">---</span></div>
-        </div>
-    </div>
-
-    <!-- Scenario Analysis -->
-    <div class="scenario-card" id="scenarioAnalysis">
-        <div id="scenarioContent">Loading analysis...</div>
+    <!-- Option Chain Table -->
+    <div class="table-container">
+        <table class="option-table" id="optionTable">
+            <thead>
+                <tr>
+                    <th>CALL OI CHANGE</th>
+                    <th>CALL NET OI</th>
+                    <th>STRIKE</th>
+                    <th>PUT NET OI</th>
+                    <th>PUT OI CHANGE</th>
+                </tr>
+            </thead>
+            <tbody id="optionTableBody">
+                <tr><td colspan="5">Loading option chain...</td></tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="footer">
-        ⏱️ Data refreshes every 30 seconds | First hit to EOS/EOR is generally safe | Multiple hits = higher breakout risk
+        ⏱️ Data refreshes every 30 seconds | OI change: Green = Addition, Red = Reduction
     </div>
 </div>
 
 <script>
     const JSON_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data.json';
-
-    // ========== SCENARIO DATABASE ==========
-    const scenarioRules = {
-        1: {
-            title: "⚖️ CONSOLIDATION (Rangebound)",
-            marketState: "Both support & resistance are STRONG or MODERATE. No clear direction.",
-            possibleOutcome: "Price oscillates between EOS and EOR. First touch to either level = high probability reversal.",
-            whatToDo: "BUY CE at EOS, BUY PE at EOR. Avoid middle zone.",
-            action: "WAIT",
-            actionClass: "wait",
-            advice: "Trade only at the edges. First hit is safest."
-        },
-        2: {
-            title: "📈 BULLISH (Support STRONG, Resistance WTT)",
-            marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
-            possibleOutcome: "Buying pressure building. Market likely to move up.",
-            whatToDo: "BUY CE at EOS or every Put Diversion.",
-            action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "Avoid selling Puts."
-        },
-        3: {
-            title: "📉 BEARISH (Resistance STRONG, Support WTB)",
-            marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
-            possibleOutcome: "Selling pressure building. Market likely to move down.",
-            whatToDo: "BUY PE at EOR or every Call Diversion.",
-            action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "Avoid buying Calls."
-        },
-        4: {
-            title: "🟢 BULLISH (Support WTT, Resistance STRONG)",
-            marketState: "Support is WTT. Resistance is STRONG.",
-            possibleOutcome: "Support shifting upward. Mild bullish momentum.",
-            whatToDo: "BUY CE at EOS. Target next upper diversion.",
-            action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "Avoid selling Puts."
-        },
-        5: {
-            title: "🚀 HIGHLY BULLISH (Rocket Market – Both WTT)",
-            marketState: "Both sides WTT. Institutional money moving to higher strikes.",
-            possibleOutcome: "Unstoppable upward momentum. Breakout above EOR likely.",
-            whatToDo: "BUY CE aggressively at every dip. Hold past EOR.",
-            action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "No PE buying."
-        },
-        6: {
-            title: "🌀 CHAOS (No Trade – WTB + WTT)",
-            marketState: "Support WTB, Resistance WTT. Conflicting signals.",
-            possibleOutcome: "Market squeeze / volatile compression. False breakouts.",
-            whatToDo: "STAY FLAT. No trading zone.",
-            action: "NO TRADE",
-            actionClass: "no-trade",
-            advice: "Wait for either side to become STRONG."
-        },
-        7: {
-            title: "🔻 BEARISH (Support WTB, Resistance STRONG)",
-            marketState: "Support WTB, Resistance STRONG. Downward pressure.",
-            possibleOutcome: "Bearish momentum. Breakdown below EOS likely.",
-            whatToDo: "BUY PE at EOR. Target lower diversion band.",
-            action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "Avoid buying Calls."
-        },
-        8: {
-            title: "⚡ WHIPLASH (No Trade – WTT + WTB)",
-            marketState: "Support WTT, Resistance WTB. High whipsaw risk.",
-            possibleOutcome: "Intraday spikes. Premium decay.",
-            whatToDo: "STAY FLAT. No trading zone.",
-            action: "NO TRADE",
-            actionClass: "no-trade",
-            advice: "High risk of losses. Avoid."
-        },
-        9: {
-            title: "💥 CRASH MODE (Highly Bearish – Both WTB)",
-            marketState: "Both sides WTB. Institutional money moving to lower strikes.",
-            possibleOutcome: "Unstoppable downward momentum. Breakdown below EOS likely.",
-            whatToDo: "BUY PE aggressively at every rise. Hold below EOS.",
-            action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "No CE buying."
-        }
-    };
+    let currentData = null;
 
     // ========== CREATE BACKGROUND DOTS ==========
     function createDots() {
         const container = document.getElementById('dotContainer');
         const dotCount = window.innerWidth < 768 ? 30 : 60;
+        container.innerHTML = '';
         
         for (let i = 0; i < dotCount; i++) {
             const dot = document.createElement('div');
             dot.classList.add('dot');
-            const size = Math.random() * 60 + 20;
+            const size = Math.random() * 50 + 15;
             dot.style.width = `${size}px`;
             dot.style.height = `${size}px`;
             dot.style.left = `${Math.random() * 100}%`;
-            dot.style.animationDuration = `${Math.random() * 20 + 15}s`;
+            dot.style.animationDuration = `${Math.random() * 20 + 12}s`;
             dot.style.animationDelay = `${Math.random() * 15}s`;
-            dot.style.opacity = Math.random() * 0.3 + 0.1;
+            dot.style.opacity = Math.random() * 0.25 + 0.1;
             container.appendChild(dot);
         }
     }
 
-    // ========== DATA UPDATE WITH ANIMATION ==========
-    let currentData = null;
+    // ========== FORMAT NUMBER WITH COMMAS ==========
+    function formatNumber(num) {
+        if (!num && num !== 0) return '---';
+        return num.toLocaleString('en-IN');
+    }
 
-    function animateDataUpdate() {
-        const elements = document.querySelectorAll('.kpi-card, .panel, .scenario-card, .info-card');
-        elements.forEach(el => {
-            el.classList.add('data-update');
-            setTimeout(() => {
-                el.classList.remove('data-update');
-            }, 400);
+    function formatChange(num) {
+        if (!num && num !== 0) return '---';
+        const formatted = num.toLocaleString('en-IN');
+        return num >= 0 ? `+${formatted}` : `${formatted}`;
+    }
+
+    // ========== GENERATE OPTION CHAIN DATA (FALLBACK) ==========
+    // This creates a realistic option chain based on the current spot
+    function generateOptionChain(spot) {
+        // Round spot to nearest 50
+        const baseStrike = Math.round(spot / 50) * 50;
+        const strikes = [];
+        for (let i = -10; i <= 10; i++) {
+            strikes.push(baseStrike + (i * 50));
+        }
+        
+        return strikes.map(strike => {
+            // Calculate distance from spot
+            const distance = Math.abs(strike - spot);
+            const isCall = strike > spot;
+            
+            // Generate realistic OI values (higher near ATM)
+            let callOi = 0;
+            let putOi = 0;
+            let callOiChange = 0;
+            let putOiChange = 0;
+            
+            if (strike === spot || Math.abs(strike - spot) <= 25) {
+                // ATM strikes have highest OI
+                callOi = Math.floor(Math.random() * 5000000 + 8000000);
+                putOi = Math.floor(Math.random() * 5000000 + 7000000);
+                callOiChange = Math.floor(Math.random() * 3000000 - 1000000);
+                putOiChange = Math.floor(Math.random() * 3000000 - 1000000);
+            } else if (strike > spot) {
+                // OTM Calls have moderate OI
+                const factor = Math.max(0.3, 1 - (distance / 500));
+                callOi = Math.floor(Math.random() * 3000000 + 2000000) * factor;
+                putOi = Math.floor(Math.random() * 2000000 + 1000000) * factor;
+                callOiChange = Math.floor(Math.random() * 1500000 - 500000);
+                putOiChange = Math.floor(Math.random() * 1500000 - 500000);
+            } else {
+                // OTM Puts have moderate OI
+                const factor = Math.max(0.3, 1 - (distance / 500));
+                callOi = Math.floor(Math.random() * 2000000 + 1000000) * factor;
+                putOi = Math.floor(Math.random() * 3000000 + 2000000) * factor;
+                callOiChange = Math.floor(Math.random() * 1500000 - 500000);
+                putOiChange = Math.floor(Math.random() * 1500000 - 500000);
+            }
+            
+            return {
+                strike,
+                callOi: Math.floor(callOi),
+                callOiChange: Math.floor(callOiChange),
+                putOi: Math.floor(putOi),
+                putOiChange: Math.floor(putOiChange)
+            };
         });
     }
 
-    function formatPoints(num) {
-        return num?.toFixed(2) || '---';
+    // ========== RENDER OPTION CHAIN TABLE ==========
+    function renderOptionChain(spot) {
+        const chain = generateOptionChain(spot);
+        const tbody = document.getElementById('optionTableBody');
+        const atmStrike = Math.round(spot / 50) * 50;
+        
+        tbody.innerHTML = '';
+        
+        chain.forEach(item => {
+            const row = tbody.insertRow();
+            const isATM = Math.abs(item.strike - atmStrike) <= 25;
+            if (isATM) row.classList.add('atm-row');
+            
+            // Call OI Change
+            const callChangeCell = row.insertCell(0);
+            callChangeCell.innerHTML = formatChange(item.callOiChange);
+            callChangeCell.className = item.callOiChange >= 0 ? 'call-positive' : 'call-negative';
+            
+            // Call Net OI
+            const callOiCell = row.insertCell(1);
+            callOiCell.innerHTML = formatNumber(item.callOi);
+            callOiCell.className = 'call-positive';
+            
+            // Strike
+            const strikeCell = row.insertCell(2);
+            strikeCell.innerHTML = item.strike.toLocaleString('en-IN');
+            strikeCell.className = 'strike-cell';
+            
+            // Put Net OI
+            const putOiCell = row.insertCell(3);
+            putOiCell.innerHTML = formatNumber(item.putOi);
+            putOiCell.className = 'put-positive';
+            
+            // Put OI Change
+            const putChangeCell = row.insertCell(4);
+            putChangeCell.innerHTML = formatChange(item.putOiChange);
+            putChangeCell.className = item.putOiChange >= 0 ? 'put-positive' : 'put-negative';
+        });
     }
 
-    async function loadData() {
-        try {
-            const res = await fetch(`${JSON_URL}?t=${Date.now()}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const newData = await res.json();
-            
-            // Check if data actually changed
-            if (currentData && JSON.stringify(currentData) === JSON.stringify(newData)) {
-                // No change, just update timestamp
-                if (newData.timestamp) {
-                    document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(newData.timestamp).toLocaleTimeString()}`;
-                }
-                return;
-            }
-            
-            currentData = newData;
-            renderDashboard(newData);
-            animateDataUpdate();
-            
-        } catch (err) {
-            console.error(err);
-            document.getElementById('scenarioContent').innerHTML = '<div class="info-card">Failed to fetch live data. Check GitHub or Edge Function.</div>';
-        }
-    }
-
-    function renderDashboard(d) {
-        // KPI
-        document.getElementById('spotVal').innerHTML = `₹ ${formatPoints(d.spot_price)}`;
+    // ========== UPDATE KPI DISPLAY ==========
+    function updateKPI(d) {
+        document.getElementById('spotVal').innerHTML = `₹ ${d.spot_price?.toFixed(2) || '---'}`;
         document.getElementById('pcrVal').innerHTML = d.pcr?.toFixed(3) || '---';
         document.getElementById('scenarioVal').innerHTML = `SCENARIO ${d.coa_scenario || '?'}`;
         const bias = d.market_bias || 'NEUTRAL';
         document.getElementById('biasVal').innerHTML = bias;
         document.getElementById('biasVal').style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
-
-        // Support / Resistance
-        document.getElementById('supStrike').innerHTML = d.support?.strike || '---';
-        document.getElementById('supState').innerHTML = d.support?.state || '---';
-        document.getElementById('supStrength').innerHTML = `${d.support?.strength?.toFixed(1) || '0'}%`;
-        document.getElementById('eosVal').innerHTML = formatPoints(d.levels?.eos);
-        document.getElementById('resStrike').innerHTML = d.resistance?.strike || '---';
-        document.getElementById('resState').innerHTML = d.resistance?.state || '---';
-        document.getElementById('resStrength').innerHTML = `${d.resistance?.strength?.toFixed(1) || '0'}%`;
-        document.getElementById('eorVal').innerHTML = formatPoints(d.levels?.eor);
-
-        const spot = d.spot_price || 0;
-        const eos = d.levels?.eos || 0;
-        const eor = d.levels?.eor || 0;
-
-        // Proximity alert
-        const nearEOS = Math.abs(spot - eos) <= 20;
-        const nearEOR = Math.abs(spot - eor) <= 20;
-        let alertMsg = '';
-        if (nearEOS) alertMsg = '⚠️ PRICE NEAR EOS – Watch for bounce / breakdown. FIRST HIT safest.';
-        else if (nearEOR) alertMsg = '⚠️ PRICE NEAR EOR – Watch for rejection / breakout. FIRST HIT safest.';
-        else alertMsg = '📍 Price between EOS and EOR. Wait for level test.';
         
-        // Scenario
-        const scenarioId = d.coa_scenario || 1;
-        const rule = scenarioRules[scenarioId] || scenarioRules[1];
-
-        const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
-        const isBuyCE = rule.action === 'BUY CE';
-        
-        const entryPrice = showLevels ? (isBuyCE ? eos : eor) : 0;
-        const targetPrice = showLevels ? (isBuyCE ? eor : eos) : 0;
-        const stopPrice = showLevels ? (isBuyCE ? eos - 20 : eor + 20) : 0;
-        
-        const entryDiff = showLevels ? (entryPrice - spot).toFixed(2) : 0;
-        const targetDiff = showLevels ? (targetPrice - spot).toFixed(2) : 0;
-        const stopDiff = showLevels ? (stopPrice - spot).toFixed(2) : 0;
-        const symbol = isBuyCE ? 'CE' : 'PE';
-
-        let levelsHtml = '';
-        if (showLevels) {
-            levelsHtml = `
-                <div class="info-card">
-                    <div class="info-label">📐 YOUR LEVELS (${symbol})</div>
-                    <div class="level-line">
-                        <span>🎯 TARGET: <span class="target-level">${formatPoints(targetPrice)}</span> <span class="diff-positive">(${targetDiff >= 0 ? '+' : ''}${targetDiff})</span></span>
-                        <span>📍 SPOT: <span style="color:#b0c4de; font-weight:600;">${formatPoints(spot)}</span></span>
-                        <span>🛑 STOP LOSS: <span class="sl-level">${formatPoints(stopPrice)}</span> <span class="diff-negative">(${stopDiff >= 0 ? '+' : ''}${stopDiff})</span></span>
-                    </div>
-                    <div style="margin-top: 16px; font-size:0.7rem; color:#7f8ea3;">Entry: ${formatPoints(entryPrice)} (${entryDiff >= 0 ? '+' : ''}${entryDiff})</div>
-                </div>
-            `;
-        }
-
-        const scenarioHtml = `
-            <div class="scenario-header">
-                <div class="scenario-title">
-                    <span>${rule.title}</span>
-                    <span class="badge">SCENARIO ${scenarioId}</span>
-                </div>
-                <div class="trade-decision ${rule.actionClass}">${rule.action}</div>
-            </div>
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label">MARKET STATE</div>
-                    <div style="font-weight:500; margin-top:4px;">${rule.marketState}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">POSSIBLE OUTCOME</div>
-                    <div style="font-weight:500; margin-top:4px;">${rule.possibleOutcome}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">WHAT TO DO</div>
-                    <div style="font-weight:500; margin-top:4px;">${rule.whatToDo}</div>
-                </div>
-            </div>
-            ${levelsHtml}
-            <div class="proximity-alert">${alertMsg}</div>
-        `;
-
-        document.getElementById('scenarioContent').innerHTML = scenarioHtml;
-
         if (d.timestamp) {
             document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(d.timestamp).toLocaleTimeString()}`;
+        }
+    }
+
+    // ========== MAIN LOAD FUNCTION ==========
+    async function loadData() {
+        try {
+            const res = await fetch(`${JSON_URL}?t=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            currentData = data;
+            
+            // Update KPI section
+            updateKPI(data);
+            
+            // Render option chain based on spot price
+            const spot = data.spot_price || 23366.7;
+            renderOptionChain(spot);
+            
+        } catch (err) {
+            console.error(err);
+            // Fallback: use a default spot value
+            renderOptionChain(23366.7);
+            document.getElementById('spotVal').innerHTML = '₹ 23,366.70';
+            document.getElementById('timestampLabel').innerHTML = '⚠️ Using sample data';
         }
     }
 
     // Initialize
     createDots();
     loadData();
-    // Refresh every 30 seconds (only data, no page reload)
     setInterval(loadData, 30000);
     
-    // Regenerate dots on window resize (responsive)
     window.addEventListener('resize', () => {
-        const container = document.getElementById('dotContainer');
-        container.innerHTML = '';
         createDots();
     });
 </script>

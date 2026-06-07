@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>LTP Calculator | Investor Daddy | Complete Dashboard</title>
+    <title>LTP Calculator | Investor Daddy | ATM ±7 Strikes</title>
     <style>
         * {
             margin: 0;
@@ -395,7 +395,7 @@
     <div class="header">
         <div class="logo">
             <h1>📊 LTP CALCULATOR</h1>
-            <p>Investor Daddy | COA 1.0 Framework | Live Option Chain</p>
+            <p>Investor Daddy | COA 1.0 Framework | ATM ±7 Strikes</p>
         </div>
         <div class="live-badge">
             <span><span class="live-dot"></span> LIVE</span>
@@ -434,10 +434,10 @@
         <div id="scenarioContent">Loading analysis...</div>
     </div>
 
-    <!-- Option Chain Table -->
+    <!-- Option Chain Table (ATM ±7 Strikes) -->
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <div class="panel-title">📋 OPTION CHAIN (REAL TIME)</div>
+            <div class="panel-title">📋 OPTION CHAIN (ATM ±7 Strikes)</div>
             <div id="chainUpdateTime" class="last-update"></div>
         </div>
         <table class="option-table" id="optionTable">
@@ -459,7 +459,7 @@
     </div>
 
     <div class="footer">
-        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes (GitHub Action)
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes (ATM ±7 strikes only)
     </div>
 </div>
 
@@ -467,87 +467,96 @@
     // ============================================================
     // LEVEL 1: SCENARIO RULES (EDIT THIS SECTION ONLY)
     // ============================================================
-        const scenarioRules = {
+    const SCENARIO_RULES = {
         1: {
+            name: "CONSOLIDATION",
             title: "⚖️ CONSOLIDATION (Rangebound)",
-            marketState: "Both support & resistance are STRONG or MODERATE. No clear direction.",
-            possibleOutcome: "Price oscillates between EOS and EOR. First touch to either level = high probability reversal. Multiple touches increase breakout risk.",
-            whatToDo: "BUY CE at EOS, BUY PE at EOR. Avoid middle zone.",
             action: "WAIT",
-            actionClass: "wait",
-            advice: "Trade only at the edges. First hit is safest."
+            color: "wait",
+            marketState: "Both support and resistance are STRONG or MODERATE. No clear direction.",
+            outcome: "Price oscillates between EOS and EOR. First touch to either level = high probability reversal.",
+            instruction: "BUY CE at EOS, BUY PE at EOR. Avoid middle zone.",
+            riskNote: "Multiple touches increase breakout risk. First hit is safest."
         },
         2: {
+            name: "BULLISH",
             title: "📈 BULLISH (Support STRONG, Resistance WTT)",
-            marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
-            possibleOutcome: "Buying pressure building. Market likely to move up.",
-            whatToDo: "BUY CE at EOS or every Put Diversion.",
             action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "Aggressive CE buying. Avoid selling Puts."
+            color: "buy-ce",
+            marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
+            outcome: "Buying pressure building. Market likely to move up.",
+            instruction: "BUY CE at EOS or every Put Diversion.",
+            riskNote: "Avoid selling Puts. First hit to EOS is safest."
         },
         3: {
+            name: "BEARISH",
             title: "📉 BEARISH (Resistance STRONG, Support WTB)",
-            marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
-            possibleOutcome: "Selling pressure building. Market likely to move down.",
-            whatToDo: "BUY PE at EOR or every Call Diversion.",
             action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "Aggressive PE buying. Avoid buying Calls."
+            color: "buy-pe",
+            marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
+            outcome: "Selling pressure building. Market likely to move down.",
+            instruction: "BUY PE at EOR or every Call Diversion.",
+            riskNote: "Avoid buying Calls. First hit to EOR is safest."
         },
         4: {
+            name: "BULLISH",
             title: "🟢 BULLISH (Support WTT, Resistance STRONG)",
-            marketState: "Support is WTT (Weak Towards Top). Resistance is STRONG.",
-            possibleOutcome: "Support shifting upward. Mild bullish momentum.",
-            whatToDo: "BUY CE at EOS. Target next upper diversion.",
             action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "Avoid selling Puts. Look for dips."
+            color: "buy-ce",
+            marketState: "Support is WTT (Weak Towards Top). Resistance is STRONG.",
+            outcome: "Support shifting upward. Mild bullish momentum.",
+            instruction: "BUY CE at EOS. Target next upper diversion.",
+            riskNote: "Avoid selling Puts. Watch for support migration."
         },
         5: {
+            name: "HIGHLY_BULLISH",
             title: "🚀 HIGHLY BULLISH (Rocket Market – Both WTT)",
-            marketState: "Both sides WTT. Institutional money moving to higher strikes.",
-            possibleOutcome: "Unstoppable upward momentum. Breakout above EOR likely.",
-            whatToDo: "BUY CE aggressively at every dip. Hold past EOR.",
             action: "BUY CE",
-            actionClass: "buy-ce",
-            advice: "No PE buying. Aggressive positioning."
+            color: "buy-ce",
+            marketState: "Both sides WTT. Institutional money moving to higher strikes.",
+            outcome: "Unstoppable upward momentum. Breakout above EOR likely.",
+            instruction: "BUY CE aggressively at every dip. Hold past EOR.",
+            riskNote: "No PE buying. Trend is your friend."
         },
         6: {
+            name: "CHAOS",
             title: "🌀 CHAOS (No Trade – WTB + WTT)",
-            marketState: "Support WTB, Resistance WTT. Conflicting signals.",
-            possibleOutcome: "Market squeeze / volatile compression. False breakouts.",
-            whatToDo: "STAY FLAT. No trading zone.",
             action: "NO TRADE",
-            actionClass: "no-trade",
-            advice: "Wait for either side to become STRONG."
+            color: "no-trade",
+            marketState: "Support WTB, Resistance WTT. Conflicting signals.",
+            outcome: "Market squeeze / volatile compression. False breakouts expected.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "Wait for either side to become STRONG before entering."
         },
         7: {
+            name: "BEARISH",
             title: "🔻 BEARISH (Support WTB, Resistance STRONG)",
-            marketState: "Support WTB, Resistance STRONG. Downward pressure.",
-            possibleOutcome: "Bearish momentum. Breakdown below EOS likely.",
-            whatToDo: "BUY PE at EOR. Target lower diversion band.",
             action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "Avoid buying Calls."
+            color: "buy-pe",
+            marketState: "Support WTB, Resistance STRONG. Downward pressure.",
+            outcome: "Bearish momentum. Breakdown below EOS likely.",
+            instruction: "BUY PE at EOR. Target lower diversion band.",
+            riskNote: "Avoid buying Calls. Let the downtrend play out."
         },
         8: {
+            name: "WHIPLASH",
             title: "⚡ WHIPLASH (No Trade – WTT + WTB)",
-            marketState: "Support WTT, Resistance WTB. High whipsaw risk.",
-            possibleOutcome: "Intraday spikes. Premium decay.",
-            whatToDo: "STAY FLAT. No trading zone.",
             action: "NO TRADE",
-            actionClass: "no-trade",
-            advice: "High risk of losses. Avoid."
+            color: "no-trade",
+            marketState: "Support WTT, Resistance WTB. High whipsaw risk.",
+            outcome: "Intraday spikes. Premium decay risk.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "High risk of losses. Avoid options buying."
         },
         9: {
+            name: "CRASH",
             title: "💥 CRASH MODE (Highly Bearish – Both WTB)",
-            marketState: "Both sides WTB. Institutional money moving to lower strikes.",
-            possibleOutcome: "Unstoppable downward momentum. Breakdown below EOS likely.",
-            whatToDo: "BUY PE aggressively at every rise. Hold below EOS.",
             action: "BUY PE",
-            actionClass: "buy-pe",
-            advice: "No CE buying. Aggressive short positioning."
+            color: "buy-pe",
+            marketState: "Both sides WTB. Institutional money moving to lower strikes.",
+            outcome: "Unstoppable downward momentum. Breakdown below EOS likely.",
+            instruction: "BUY PE aggressively at every rise. Hold below EOS.",
+            riskNote: "No CE buying. Aggressive short positioning."
         }
     };
 
@@ -559,7 +568,7 @@
     const SPOT_CSV_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/spot_price.csv';
 
     // ============================================================
-    // LEVEL 3: CORE FUNCTIONS (DO NOT EDIT UNLESS NEEDED)
+    // LEVEL 3: CORE FUNCTIONS
     // ============================================================
     
     // Background dots
@@ -605,7 +614,7 @@
         return res.text();
     }
 
-    // Parse option chain from TSV
+    // Parse option chain from TSV - ONLY ATM ±7 STRIKES
     function parseOptionChainTSV(text, spot) {
         const lines = text.split('\n').filter(l => l.trim());
         let startIdx = 0;
@@ -618,13 +627,20 @@
         }
         
         const atmStrike = getATMStrike(spot);
+        // Calculate range: from ATM - 7 strikes to ATM + 7 strikes (50 points each)
+        const minStrike = atmStrike - (7 * 50);
+        const maxStrike = atmStrike + (7 * 50);
+        
         const strikes = [];
         
-        for (let i = startIdx; i < lines.length && strikes.length < 40; i++) {
+        for (let i = startIdx; i < lines.length; i++) {
             const p = lines[i].split('\t');
             if (p.length < 11) continue;
             const strike = cleanNumber(p[5]);
             if (strike < 20000 || strike > 26000) continue;
+            // FILTER: Only strikes within ATM ±7 (350 points range)
+            if (strike < minStrike || strike > maxStrike) continue;
+            
             strikes.push({
                 strike,
                 isATM: Math.abs(strike - atmStrike) <= 25,
@@ -636,6 +652,8 @@
                 putOi: cleanNumber(p[10])
             });
         }
+        // Sort by strike price
+        strikes.sort((a, b) => a.strike - b.strike);
         return strikes;
     }
 
@@ -775,12 +793,12 @@
             const tsvText = await fetchText(OPTION_CHAIN_URL);
             const strikes = parseOptionChainTSV(tsvText, spot);
             renderOptionChainTable(strikes);
-            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
+            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()} | ATM ±7 strikes (${strikes.length} strikes)`;
         } catch (err) {
             console.error('Option chain error:', err);
             const tbody = document.getElementById('optionTableBody');
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes.</td></tr>';
+                tbody.innerHTML = '<td><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes. Showing ATM ±7 strikes only.</td></tr>';
             }
         }
     }

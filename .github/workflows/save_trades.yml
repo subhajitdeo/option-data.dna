@@ -1,0 +1,32 @@
+name: Save Trades to GitHub
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  save-trades:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install requests
+        run: pip install requests
+      
+      - name: Run trade saver
+        run: python scripts/save_trades.py
+      
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/trades_history.json
+          git diff --staged --quiet || git commit -m "Auto-save trade signals - $(date -u '+%Y-%m-%d %H:%M:%S')"
+          git push

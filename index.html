@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LTP Calculator | Fintech Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LTP Calculator | Frosted Glass Edition</title>
     <style>
         * {
             margin: 0;
@@ -12,15 +12,75 @@
         }
 
         body {
-            background: linear-gradient(145deg, #0c111a 0%, #111827 100%);
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0a0f1c 0%, #0f1625 100%);
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             padding: 20px;
             color: #e2e8f0;
+            position: relative;
+            overflow-x: hidden;
         }
 
+        /* ========== ANIMATED BACKGROUND DOTS ========== */
+        .dot-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .dot {
+            position: absolute;
+            background: rgba(56, 189, 248, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatDot linear infinite;
+            filter: blur(2px);
+        }
+
+        @keyframes floatDot {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-20vh) translateX(40px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ========== FROSTED GLASS EFFECT ========== */
         .container {
             max-width: 1300px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glass morphism base */
+        .kpi-card, .panel, .scenario-card, .live-badge, .info-card {
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        /* Hover effect - less blur on hover */
+        .kpi-card:hover, .panel:hover, .info-card:hover {
+            background: rgba(15, 25, 45, 0.65);
+            border-color: rgba(56, 189, 248, 0.35);
+            transform: translateY(-2px);
         }
 
         /* Header */
@@ -32,7 +92,7 @@
             gap: 16px;
             margin-bottom: 28px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #1e2a3a;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         }
 
         .logo h1 {
@@ -54,10 +114,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: #0f172a;
             padding: 8px 20px;
             border-radius: 40px;
-            border: 1px solid #2d3748;
         }
 
         .live-dot {
@@ -76,20 +134,29 @@
             50% { opacity: 0.6; transform: scale(1.1);}
         }
 
+        /* Data update animation */
+        @keyframes dataPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .data-update {
+            animation: dataPulse 0.4s ease-in-out;
+        }
+
         /* KPI Cards */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 18px;
             margin-bottom: 28px;
         }
 
         .kpi-card {
-            background: #111827;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 20px;
-            border: 1px solid #1f2a3e;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
 
         .kpi-label {
@@ -115,10 +182,8 @@
         }
 
         .panel {
-            background: #0f172a;
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 22px;
-            border: 1px solid #1e2a3a;
         }
 
         .panel-title {
@@ -134,7 +199,7 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid #1e2a3a;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
         }
 
         .level-row:last-child {
@@ -157,15 +222,14 @@
             border-radius: 40px;
             font-size: 0.7rem;
             font-weight: 500;
-            background: #1e2a3a;
+            background: rgba(30, 42, 58, 0.7);
         }
 
-        /* Scenario Analysis Card */
+        /* Scenario Card */
         .scenario-card {
-            background: #0b1018;
-            border-radius: 28px;
+            border-radius: 32px;
             padding: 24px;
-            border: 1px solid #1e2a3a;
+            margin-bottom: 20px;
         }
 
         .scenario-header {
@@ -176,7 +240,7 @@
             gap: 16px;
             margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #1e2a3a;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
         }
 
         .scenario-title {
@@ -189,11 +253,11 @@
         }
 
         .trade-decision {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 800;
             padding: 8px 24px;
             border-radius: 60px;
-            background: #0f172a;
+            background: rgba(15, 25, 45, 0.7);
         }
 
         .buy-ce { color: #2ecc71; border: 1px solid #2ecc7133; }
@@ -203,13 +267,12 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
             margin: 20px 0;
         }
 
         .info-card {
-            background: #0f172a;
             border-radius: 20px;
             padding: 16px;
         }
@@ -230,17 +293,18 @@
             margin-top: 8px;
         }
 
-        .entry-level { color: #3b82f6; font-weight: 700; font-size: 1.2rem; }
-        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.2rem; }
-        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.2rem; }
+        .entry-level { color: #3b82f6; font-weight: 700; font-size: 1.1rem; }
+        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.1rem; }
+        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.1rem; }
 
-        .diff-positive { color: #2ecc71; font-size: 0.8rem; }
-        .diff-negative { color: #ef4444; font-size: 0.8rem; }
+        .diff-positive { color: #2ecc71; font-size: 0.75rem; }
+        .diff-negative { color: #ef4444; font-size: 0.75rem; }
 
         .proximity-alert {
             margin-top: 16px;
             padding: 12px;
-            background: #1a1f2e;
+            background: rgba(26, 31, 46, 0.7);
+            backdrop-filter: blur(8px);
             border-radius: 16px;
             font-size: 0.75rem;
             text-align: center;
@@ -251,19 +315,33 @@
             text-align: center;
             font-size: 0.65rem;
             color: #5a6a8a;
-            margin-top: 30px;
+            margin-top: 20px;
             padding-top: 16px;
-            border-top: 1px solid #1e2a3a;
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
         }
 
+        /* Mobile Responsive */
         @media (max-width: 760px) {
-            .dual-panel { grid-template-columns: 1fr; }
-            .level-line { flex-direction: column; align-items: flex-start; }
-            .trade-decision { font-size: 1.2rem; }
+            body { padding: 12px; }
+            .dual-panel { grid-template-columns: 1fr; gap: 16px; }
+            .level-line { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .trade-decision { font-size: 1.1rem; padding: 6px 18px; }
+            .scenario-title { font-size: 1rem; }
+            .kpi-value { font-size: 1.3rem; }
+            .level-number { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .info-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+
+<!-- Animated Background Dots -->
+<div class="dot-container" id="dotContainer"></div>
+
 <div class="container">
     <!-- Header -->
     <div class="header">
@@ -303,13 +381,13 @@
         </div>
     </div>
 
-    <!-- Scenario Analysis (includes trading decision at top) -->
+    <!-- Scenario Analysis -->
     <div class="scenario-card" id="scenarioAnalysis">
         <div id="scenarioContent">Loading analysis...</div>
     </div>
 
     <div class="footer">
-        ⏱️ Data refreshes every 3 minutes | First hit to EOS/EOR is generally safe | Multiple hits = higher breakout risk
+        ⏱️ Data refreshes every 30 seconds | First hit to EOS/EOR is generally safe | Multiple hits = higher breakout risk
     </div>
 </div>
 
@@ -401,20 +479,65 @@
         }
     };
 
-    async function loadData() {
-        try {
-            const res = await fetch(`${JSON_URL}?t=${Date.now()}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const d = await res.json();
-            renderDashboard(d);
-        } catch (err) {
-            console.error(err);
-            document.getElementById('scenarioContent').innerHTML = '<div class="info-card">Failed to fetch live data. Check GitHub or Edge Function.</div>';
+    // ========== CREATE BACKGROUND DOTS ==========
+    function createDots() {
+        const container = document.getElementById('dotContainer');
+        const dotCount = window.innerWidth < 768 ? 30 : 60;
+        
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            const size = Math.random() * 60 + 20;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            dot.style.left = `${Math.random() * 100}%`;
+            dot.style.animationDuration = `${Math.random() * 20 + 15}s`;
+            dot.style.animationDelay = `${Math.random() * 15}s`;
+            dot.style.opacity = Math.random() * 0.3 + 0.1;
+            container.appendChild(dot);
         }
+    }
+
+    // ========== DATA UPDATE WITH ANIMATION ==========
+    let currentData = null;
+
+    function animateDataUpdate() {
+        const elements = document.querySelectorAll('.kpi-card, .panel, .scenario-card, .info-card');
+        elements.forEach(el => {
+            el.classList.add('data-update');
+            setTimeout(() => {
+                el.classList.remove('data-update');
+            }, 400);
+        });
     }
 
     function formatPoints(num) {
         return num?.toFixed(2) || '---';
+    }
+
+    async function loadData() {
+        try {
+            const res = await fetch(`${JSON_URL}?t=${Date.now()}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const newData = await res.json();
+            
+            // Check if data actually changed
+            if (currentData && JSON.stringify(currentData) === JSON.stringify(newData)) {
+                // No change, just update timestamp
+                if (newData.timestamp) {
+                    document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(newData.timestamp).toLocaleTimeString()}`;
+                }
+                return;
+            }
+            
+            currentData = newData;
+            renderDashboard(newData);
+            animateDataUpdate();
+            
+        } catch (err) {
+            console.error(err);
+            document.getElementById('scenarioContent').innerHTML = '<div class="info-card">Failed to fetch live data. Check GitHub or Edge Function.</div>';
+        }
     }
 
     function renderDashboard(d) {
@@ -452,11 +575,9 @@
         const scenarioId = d.coa_scenario || 1;
         const rule = scenarioRules[scenarioId] || scenarioRules[1];
 
-        // Determine if we should show target/SL (only for BUY CE or BUY PE)
         const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
         const isBuyCE = rule.action === 'BUY CE';
         
-        // Calculate levels for display (only if action is BUY)
         const entryPrice = showLevels ? (isBuyCE ? eos : eor) : 0;
         const targetPrice = showLevels ? (isBuyCE ? eor : eos) : 0;
         const stopPrice = showLevels ? (isBuyCE ? eos - 20 : eor + 20) : 0;
@@ -466,7 +587,6 @@
         const stopDiff = showLevels ? (stopPrice - spot).toFixed(2) : 0;
         const symbol = isBuyCE ? 'CE' : 'PE';
 
-        // Build the scenario analysis HTML
         let levelsHtml = '';
         if (showLevels) {
             levelsHtml = `
@@ -510,14 +630,23 @@
 
         document.getElementById('scenarioContent').innerHTML = scenarioHtml;
 
-        // Timestamp
         if (d.timestamp) {
             document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(d.timestamp).toLocaleTimeString()}`;
         }
     }
 
+    // Initialize
+    createDots();
     loadData();
+    // Refresh every 30 seconds (only data, no page reload)
     setInterval(loadData, 30000);
+    
+    // Regenerate dots on window resize (responsive)
+    window.addEventListener('resize', () => {
+        const container = document.getElementById('dotContainer');
+        container.innerHTML = '';
+        createDots();
+    });
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>LTP Calculator | Investor Daddy</title>
+    <title>yeppppp</title>
     <style>
         * {
             margin: 0;
@@ -17,11 +17,6 @@
             padding: 20px;
             color: #e2e8f0;
             min-height: 100vh;
-        }
-
-        /* Ensure page starts at top on mobile */
-        html {
-            scroll-behavior: smooth;
         }
 
         /* Animated Background Dots */
@@ -139,4 +134,722 @@
         .kpi-card:hover {
             transform: translateY(-2px);
             background: rgba(15, 25, 45, 0.65);
-            border-color: rgba(56
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #7f8ea3;
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        /* Support & Resistance Panels */
+        .dual-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .panel {
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            color: #7f8ea3;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+        }
+
+        .level-row:last-child {
+            border-bottom: none;
+        }
+
+        .level-number {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .support-number { color: #2ecc71; }
+        .resistance-number { color: #e74c3c; }
+
+        .badge {
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(30, 42, 58, 0.7);
+        }
+
+        /* Scenario Analysis Card */
+        .scenario-card {
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .scenario-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .trade-decision {
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 10px 28px;
+            border-radius: 60px;
+            background: rgba(15, 25, 45, 0.7);
+        }
+
+        .buy-ce { color: #2ecc71; border: 1px solid #2ecc7133; }
+        .buy-pe { color: #e74c3c; border: 1px solid #e74c3c33; }
+        .wait { color: #f39c12; border: 1px solid #f39c1233; }
+        .no-trade { color: #95a5a6; border: 1px solid #95a5a633; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .info-card {
+            background: rgba(15, 25, 45, 0.45);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
+
+        .info-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7f8ea3;
+            margin-bottom: 10px;
+        }
+
+        .info-card div {
+            line-height: 1.5;
+        }
+
+        .level-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.2rem; }
+        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.2rem; }
+        .diff-positive { color: #2ecc71; font-size: 0.8rem; margin-left: 5px; }
+        .diff-negative { color: #ef4444; font-size: 0.8rem; margin-left: 5px; }
+
+        .proximity-alert {
+            margin-top: 20px;
+            padding: 14px;
+            background: rgba(26, 31, 46, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: #f39c12;
+        }
+
+        /* Option Chain Table - Mobile Optimized with Centered Strike */
+        .table-container {
+            background: rgba(15, 25, 45, 0.35);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            overflow-x: auto;
+            margin-bottom: 28px;
+        }
+
+        .option-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        /* On mobile, make table more compact and ensure strike is visually centered */
+        .option-table th, .option-table td {
+            text-align: center;
+            padding: 10px 6px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        .option-table th {
+            background: rgba(20, 30, 50, 0.6);
+            color: #7f8ea3;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .call-positive { color: #2ecc71; }
+        .call-negative { color: #e74c3c; }
+        .put-positive { color: #e74c3c; }
+        .put-negative { color: #2ecc71; }
+
+        .strike-cell {
+            font-weight: 700;
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.08);
+            font-size: 0.9rem;
+        }
+
+        .atm-row {
+            background: rgba(56, 189, 248, 0.15);
+            position: relative;
+        }
+        .atm-row td {
+            border-top: 1px solid rgba(56, 189, 248, 0.4);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .last-update {
+            font-size: 0.7rem;
+            color: #5a6a8a;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #5a6a8a;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .dual-panel { grid-template-columns: 1fr; gap: 16px; }
+            .kpi-value { font-size: 1.3rem; }
+            .level-number { font-size: 1.1rem; }
+            .trade-decision { font-size: 1.1rem; padding: 6px 18px; }
+            .scenario-title { font-size: 1rem; }
+            .option-table th, .option-table td { 
+                padding: 6px 3px; 
+                font-size: 0.65rem;
+            }
+            .strike-cell { font-size: 0.75rem; }
+            .option-table th { font-size: 0.6rem; }
+        }
+
+        @media (max-width: 480px) {
+            .option-table th, .option-table td { 
+                padding: 4px 2px; 
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dot-container" id="dotContainer"></div>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <h1>📊 LTP CALCULATOR</h1>
+            <p>Investor Daddy | COA 1.0 Framework | ATM ±7 Strikes</p>
+        </div>
+        <div class="live-badge">
+            <span><span class="live-dot"></span> LIVE</span>
+            <span id="timestampLabel">Updating...</span>
+        </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">SPOT</div><div class="kpi-value" id="spotVal">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">PCR</div><div class="kpi-value" id="pcrVal">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">SCENARIO</div><div class="kpi-value" id="scenarioVal">---</div></div>
+        <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
+    </div>
+
+    <!-- Support & Resistance Panels (renamed EOS/EOR to Support/Resistance) -->
+    <div class="dual-panel">
+        <div class="panel">
+            <div class="panel-title">🟢 SUPPORT STRUCTURE</div>
+            <div class="level-row"><span>Strike</span><span class="level-number support-number" id="supStrike">---</span></div>
+            <div class="level-row"><span>State</span><span class="badge" id="supState">---</span></div>
+            <div class="level-row"><span>OI Strength</span><span id="supStrength">---</span></div>
+            <div class="level-row"><span>📉 SUPPORT LEVEL</span><span class="level-number support-number" id="eosVal">---</span></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">🔴 RESISTANCE STRUCTURE</div>
+            <div class="level-row"><span>Strike</span><span class="level-number resistance-number" id="resStrike">---</span></div>
+            <div class="level-row"><span>State</span><span class="badge" id="resState">---</span></div>
+            <div class="level-row"><span>OI Strength</span><span id="resStrength">---</span></div>
+            <div class="level-row"><span>📈 RESISTANCE LEVEL</span><span class="level-number resistance-number" id="eorVal">---</span></div>
+        </div>
+    </div>
+
+    <!-- Scenario Analysis -->
+    <div class="scenario-card" id="scenarioAnalysis">
+        <div id="scenarioContent">Loading analysis...</div>
+    </div>
+
+    <!-- Option Chain Table (ATM ±7 Strikes) - Centered ATM on mobile -->
+    <div class="table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <div class="panel-title">📋 OPTION CHAIN (ATM ±7 Strikes)</div>
+            <div id="chainUpdateTime" class="last-update"></div>
+        </div>
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table class="option-table" id="optionTable">
+                <thead>
+                    <tr>
+                        <th>CALL OI</th>
+                        <th>CALL OI CHANGE</th>
+                        <th>CALL VOLUME</th>
+                        <th>STRIKE</th>
+                        <th>PUT VOLUME</th>
+                        <th>PUT OI CHANGE</th>
+                        <th>PUT OI</th>
+                    </tr>
+                </thead>
+                <tbody id="optionTableBody">
+                    <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td><tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes | ATM strike centered for easy reading
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // LEVEL 1: SCENARIO RULES (EDIT THIS SECTION ONLY)
+    // ============================================================
+    const SCENARIO_RULES = {
+        1: {
+            name: "CONSOLIDATION",
+            title: "⚖️ CONSOLIDATION (Rangebound)",
+            action: "WAIT",
+            color: "wait",
+            marketState: "Both support and resistance are STRONG or MODERATE. No clear direction.",
+            outcome: "Price oscillates between Support and Resistance levels. First touch = high probability reversal.",
+            instruction: "BUY CE at SUPPORT, BUY PE at RESISTANCE. Avoid middle zone.",
+            riskNote: "Multiple touches increase breakout risk. First hit is safest."
+        },
+        2: {
+            name: "BULLISH",
+            title: "📈 BULLISH (Support STRONG, Resistance WTT)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
+            outcome: "Buying pressure building. Market likely to move up.",
+            instruction: "BUY CE at SUPPORT level or every Put Diversion.",
+            riskNote: "Avoid selling Puts. First hit to Support is safest."
+        },
+        3: {
+            name: "BEARISH",
+            title: "📉 BEARISH (Resistance STRONG, Support WTB)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
+            outcome: "Selling pressure building. Market likely to move down.",
+            instruction: "BUY PE at RESISTANCE level or every Call Diversion.",
+            riskNote: "Avoid buying Calls. First hit to Resistance is safest."
+        },
+        4: {
+            name: "BULLISH",
+            title: "🟢 BULLISH (Support WTT, Resistance STRONG)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Support is WTT (Weak Towards Top). Resistance is STRONG.",
+            outcome: "Support shifting upward. Mild bullish momentum.",
+            instruction: "BUY CE at SUPPORT level. Target next upper diversion.",
+            riskNote: "Avoid selling Puts. Watch for support migration."
+        },
+        5: {
+            name: "HIGHLY_BULLISH",
+            title: "🚀 HIGHLY BULLISH (Rocket Market – Both WTT)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Both sides WTT. Institutional money moving to higher strikes.",
+            outcome: "Unstoppable upward momentum. Breakout above Resistance likely.",
+            instruction: "BUY CE aggressively at every dip. Hold past Resistance.",
+            riskNote: "No PE buying. Trend is your friend."
+        },
+        6: {
+            name: "CHAOS",
+            title: "🌀 CHAOS (No Trade – WTB + WTT)",
+            action: "NO TRADE",
+            color: "no-trade",
+            marketState: "Support WTB, Resistance WTT. Conflicting signals.",
+            outcome: "Market squeeze / volatile compression. False breakouts expected.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "Wait for either side to become STRONG before entering."
+        },
+        7: {
+            name: "BEARISH",
+            title: "🔻 BEARISH (Support WTB, Resistance STRONG)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Support WTB, Resistance STRONG. Downward pressure.",
+            outcome: "Bearish momentum. Breakdown below Support likely.",
+            instruction: "BUY PE at RESISTANCE level. Target lower diversion band.",
+            riskNote: "Avoid buying Calls. Let the downtrend play out."
+        },
+        8: {
+            name: "WHIPLASH",
+            title: "⚡ WHIPLASH (No Trade – WTT + WTB)",
+            action: "NO TRADE",
+            color: "no-trade",
+            marketState: "Support WTT, Resistance WTB. High whipsaw risk.",
+            outcome: "Intraday spikes. Premium decay risk.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "High risk of losses. Avoid options buying."
+        },
+        9: {
+            name: "CRASH",
+            title: "💥 CRASH MODE (Highly Bearish – Both WTB)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Both sides WTB. Institutional money moving to lower strikes.",
+            outcome: "Unstoppable downward momentum. Breakdown below Support likely.",
+            instruction: "BUY PE aggressively at every rise. Hold below Support.",
+            riskNote: "No CE buying. Aggressive short positioning."
+        }
+    };
+
+    // ============================================================
+    // LEVEL 2: CONFIGURATION (EDIT URLs IF NEEDED)
+    // ============================================================
+    const JSON_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data.json';
+    const OPTION_CHAIN_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/option_chain.tsv';
+    const SPOT_CSV_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/spot_price.csv';
+
+    // ============================================================
+    // LEVEL 3: CORE FUNCTIONS
+    // ============================================================
+    
+    // Background dots
+    function createDots() {
+        const container = document.getElementById('dotContainer');
+        const dotCount = window.innerWidth < 768 ? 30 : 60;
+        container.innerHTML = '';
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            const size = Math.random() * 50 + 15;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            dot.style.left = `${Math.random() * 100}%`;
+            dot.style.animationDuration = `${Math.random() * 20 + 12}s`;
+            dot.style.animationDelay = `${Math.random() * 15}s`;
+            dot.style.opacity = Math.random() * 0.25 + 0.1;
+            container.appendChild(dot);
+        }
+    }
+
+    function formatPoints(num) { return num?.toFixed(2) || '---'; }
+    function formatNumber(num) { return num?.toLocaleString('en-IN') || '---'; }
+
+    function cleanNumber(str) {
+        if (!str || str === '-' || str === '') return 0;
+        return parseFloat(str.replace(/,/g, '')) || 0;
+    }
+
+    function getATMStrike(spot) {
+        return Math.round(spot / 50) * 50;
+    }
+
+    async function fetchJSON(url) {
+        const res = await fetch(`${url}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    async function fetchText(url) {
+        const res = await fetch(`${url}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+    }
+
+    // Parse option chain from TSV - ONLY ATM ±7 STRIKES
+    function parseOptionChainTSV(text, spot) {
+        const lines = text.split('\n').filter(l => l.trim());
+        let startIdx = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const parts = lines[i].split('\t');
+            if (parts.length > 5 && /^\d+$/.test(parts[5]?.trim())) {
+                startIdx = i;
+                break;
+            }
+        }
+        
+        const atmStrike = getATMStrike(spot);
+        // Calculate range: from ATM - 7 strikes to ATM + 7 strikes (50 points each)
+        const minStrike = atmStrike - (7 * 50);
+        const maxStrike = atmStrike + (7 * 50);
+        
+        const strikes = [];
+        
+        for (let i = startIdx; i < lines.length; i++) {
+            const p = lines[i].split('\t');
+            if (p.length < 11) continue;
+            const strike = cleanNumber(p[5]);
+            if (strike < 20000 || strike > 26000) continue;
+            // FILTER: Only strikes within ATM ±7 (350 points range)
+            if (strike < minStrike || strike > maxStrike) continue;
+            
+            strikes.push({
+                strike,
+                isATM: Math.abs(strike - atmStrike) <= 25,
+                callOi: cleanNumber(p[0]),
+                callOiChange: cleanNumber(p[1]),
+                callVolume: cleanNumber(p[2]),
+                putVolume: cleanNumber(p[8]),
+                putOiChange: cleanNumber(p[9]),
+                putOi: cleanNumber(p[10])
+            });
+        }
+        // Sort by strike price
+        strikes.sort((a, b) => a.strike - b.strike);
+        
+        // For mobile: ensure ATM strike is in the middle by keeping all strikes
+        // The scroll container will allow horizontal scroll, but the ATM row is highlighted
+        return strikes;
+    }
+
+    // Scroll to ATM row on mobile (centers the ATM strike in the view)
+    function scrollToATMRow() {
+        // Small delay to ensure table is rendered
+        setTimeout(() => {
+            const atmRows = document.querySelectorAll('.atm-row');
+            if (atmRows.length > 0 && window.innerWidth < 768) {
+                atmRows[0].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'center'
+                });
+            }
+        }, 500);
+    }
+
+    // Render option chain table
+    function renderOptionChainTable(strikes) {
+        const tbody = document.getElementById('optionTableBody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        strikes.forEach(s => {
+            const row = tbody.insertRow();
+            if (s.isATM) row.classList.add('atm-row');
+            
+            row.insertCell(0).innerHTML = formatNumber(s.callOi);
+            
+            const callChangeCell = row.insertCell(1);
+            callChangeCell.innerHTML = s.callOiChange >= 0 ? `+${formatNumber(s.callOiChange)}` : formatNumber(s.callOiChange);
+            callChangeCell.className = s.callOiChange >= 0 ? 'call-positive' : 'call-negative';
+            
+            row.insertCell(2).innerHTML = formatNumber(s.callVolume);
+            
+            const strikeCell = row.insertCell(3);
+            strikeCell.innerHTML = s.strike.toLocaleString('en-IN');
+            strikeCell.className = 'strike-cell';
+            
+            row.insertCell(4).innerHTML = formatNumber(s.putVolume);
+            
+            const putChangeCell = row.insertCell(5);
+            putChangeCell.innerHTML = s.putOiChange >= 0 ? `+${formatNumber(s.putOiChange)}` : formatNumber(s.putOiChange);
+            putChangeCell.className = s.putOiChange >= 0 ? 'put-positive' : 'put-negative';
+            
+            row.insertCell(6).innerHTML = formatNumber(s.putOi);
+        });
+        
+        // Auto-scroll to ATM row on mobile for better UX
+        scrollToATMRow();
+    }
+
+    // Render scenario analysis (updated to use Support/Resistance terminology)
+    function renderScenarioAnalysis(data) {
+        const spot = data.spot_price || 0;
+        const supportLevel = data.levels?.eos || 0;   // EOS renamed to Support Level
+        const resistanceLevel = data.levels?.eor || 0; // EOR renamed to Resistance Level
+        const scenarioId = data.coa_scenario || 1;
+        const rule = SCENARIO_RULES[scenarioId] || SCENARIO_RULES[1];
+        
+        const isLong = rule.action === 'BUY CE';
+        const entry = isLong ? supportLevel : resistanceLevel;
+        const target = isLong ? resistanceLevel : supportLevel;
+        const stop = isLong ? supportLevel - 20 : resistanceLevel + 20;
+        const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
+        
+        const nearSupport = Math.abs(spot - supportLevel) <= 20;
+        const nearResistance = Math.abs(spot - resistanceLevel) <= 20;
+        const proximityMsg = nearSupport ? '⚠️ PRICE NEAR SUPPORT – Watch for bounce / breakdown. FIRST HIT safest.' : 
+                             (nearResistance ? '⚠️ PRICE NEAR RESISTANCE – Watch for rejection / breakout. FIRST HIT safest.' : 
+                             '📍 Price between Support and Resistance. Wait for level test.');
+        
+        const levelsHtml = showLevels ? `
+            <div class="info-card">
+                <div class="info-label">📐 YOUR LEVELS (${isLong ? 'CE' : 'PE'})</div>
+                <div class="level-line">
+                    <span>🎯 TARGET: <span class="target-level">${formatPoints(target)}</span> <span class="diff-positive">(${(target - spot) >= 0 ? '+' : ''}${(target - spot).toFixed(2)})</span></span>
+                    <span>📍 SPOT: <span style="color:#b0c4de; font-weight:600;">${formatPoints(spot)}</span></span>
+                    <span>🛑 STOP LOSS: <span class="sl-level">${formatPoints(stop)}</span> <span class="diff-negative">(${(stop - spot) >= 0 ? '+' : ''}${(stop - spot).toFixed(2)})</span></span>
+                </div>
+                <div style="margin-top: 12px; font-size:0.75rem; color:#7f8ea3;">Entry: ${formatPoints(entry)} (${(entry - spot) >= 0 ? '+' : ''}${(entry - spot).toFixed(2)})</div>
+            </div>
+        ` : '';
+        
+        document.getElementById('scenarioContent').innerHTML = `
+            <div class="scenario-header">
+                <div class="scenario-title">
+                    <span>${rule.title}</span>
+                    <span class="badge">SCENARIO ${scenarioId}</span>
+                </div>
+                <div class="trade-decision ${rule.color}">${rule.action}</div>
+            </div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">MARKET STATE</div>
+                    <div style="font-weight:500;">${rule.marketState}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">POSSIBLE OUTCOME</div>
+                    <div style="font-weight:500;">${rule.outcome}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">WHAT TO DO</div>
+                    <div style="font-weight:500;">${rule.instruction}</div>
+                </div>
+                ${rule.riskNote ? `<div class="info-card"><div class="info-label">⚠️ RISK NOTE</div><div>${rule.riskNote}</div></div>` : ''}
+            </div>
+            ${levelsHtml}
+            <div class="proximity-alert">${proximityMsg}</div>
+        `;
+    }
+
+    // Update KPI and support/resistance panels
+    function updateKPI(data) {
+        document.getElementById('spotVal').innerHTML = `₹ ${formatPoints(data.spot_price)}`;
+        document.getElementById('pcrVal').innerHTML = data.pcr?.toFixed(3) || '---';
+        document.getElementById('scenarioVal').innerHTML = `SCENARIO ${data.coa_scenario || '?'}`;
+        const bias = data.market_bias || 'NEUTRAL';
+        const biasEl = document.getElementById('biasVal');
+        biasEl.innerHTML = bias;
+        biasEl.style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
+        
+        document.getElementById('supStrike').innerHTML = data.support?.strike || '---';
+        document.getElementById('supState').innerHTML = data.support?.state || '---';
+        document.getElementById('supStrength').innerHTML = `${data.support?.strength?.toFixed(1) || '0'}%`;
+        document.getElementById('eosVal').innerHTML = formatPoints(data.levels?.eos);
+        document.getElementById('resStrike').innerHTML = data.resistance?.strike || '---';
+        document.getElementById('resState').innerHTML = data.resistance?.state || '---';
+        document.getElementById('resStrength').innerHTML = `${data.resistance?.strength?.toFixed(1) || '0'}%`;
+        document.getElementById('eorVal').innerHTML = formatPoints(data.levels?.eor);
+        
+        if (data.timestamp) {
+            document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(data.timestamp).toLocaleTimeString()}`;
+        }
+    }
+
+    // Load LTP data from Edge Function
+    async function loadLTPData() {
+        try {
+            const data = await fetchJSON(JSON_URL);
+            updateKPI(data);
+            renderScenarioAnalysis(data);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('timestampLabel').innerHTML = '⚠️ Connection error';
+        }
+    }
+
+    // Load option chain from GitHub (updated by GitHub Action)
+    async function loadOptionChain() {
+        try {
+            const spotText = await fetchText(SPOT_CSV_URL);
+            const spot = parseFloat(spotText.split(',')[0]) || 23366.7;
+            const tsvText = await fetchText(OPTION_CHAIN_URL);
+            const strikes = parseOptionChainTSV(tsvText, spot);
+            renderOptionChainTable(strikes);
+            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()} | ATM ±7 strikes (${strikes.length} strikes)`;
+        } catch (err) {
+            console.error('Option chain error:', err);
+            const tbody = document.getElementById('optionTableBody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes. Showing ATM ±7 strikes only.</td></tr>';
+            }
+        }
+    }
+
+    // ============================================================
+    // LEVEL 4: INITIALIZATION
+    // ============================================================
+    createDots();
+    loadLTPData();
+    loadOptionChain();
+    
+    // Auto-refresh timers (page stays alive, data updates automatically)
+    setInterval(loadLTPData, 30000);      // Update LTP data every 30 seconds
+    setInterval(loadOptionChain, 300000); // Update option chain every 5 minutes
+    
+    // Re-center on resize for mobile
+    window.addEventListener('resize', () => {
+        createDots();
+        scrollToATMRow();
+    });
+</script>
+</body>
+</html>

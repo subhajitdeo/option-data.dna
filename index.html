@@ -667,6 +667,17 @@
         });
     }
 
+    // ========== SAVE TRADE TO LOCAL STORAGE ==========
+    async function saveTradeToGitHub(tradeData) {
+        // Save to localStorage for local history
+        let localTrades = JSON.parse(localStorage.getItem('tradeHistory') || '[]');
+        localTrades.unshift(tradeData);
+        if (localTrades.length > 50) localTrades.pop();
+        localStorage.setItem('tradeHistory', JSON.stringify(localTrades));
+        console.log('💾 Trade signal saved:', tradeData);
+        console.log(`📋 Total trades saved locally: ${localTrades.length}`);
+    }
+
     function renderScenarioAnalysis(data) {
         const spot = data.spot_price || 0;
         const supportLevel = data.levels?.eos || 0;
@@ -694,6 +705,23 @@
                 <div style="margin-top: 12px;">Entry: ${formatPoints(entry)} (${(entry - spot) >= 0 ? '+' : ''}${(entry - spot).toFixed(2)})</div>
             </div>
         ` : '';
+        
+        // Save trade when signal is generated
+        if (showLevels && (rule.action === 'BUY CE' || rule.action === 'BUY PE')) {
+            const tradeRecord = {
+                timestamp: new Date().toISOString(),
+                spot: spot,
+                action: rule.action,
+                scenario: scenarioId,
+                bias: rule.name,
+                entry: formatPoints(entry),
+                target: formatPoints(target),
+                stopLoss: formatPoints(stop),
+                status: 'OPEN'
+            };
+            saveTradeToGitHub(tradeRecord);
+        }
+        
         document.getElementById('scenarioContent').innerHTML = `
             <div class="scenario-header">
                 <div class="scenario-title"><span>${rule.title}</span><span class="badge">SCENARIO ${scenarioId}</span></div>

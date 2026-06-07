@@ -1,217 +1,116 @@
-# option-data.dna
-// ============ SAFE NUMERIC HELPER ============
-function safeNum(value: number, fallback: number = 0): number {
-  return isFinite(value) ? value : fallback;
-}
+# Option Chain Analyzer
 
-// ============ MAIN LEARNING FUNCTION (PRODUCTION FINAL) ============
-async function updateFactorWeightsFromHistory() {
-  // 1. Regime & stability
-  const { regime, stability: regimeStability } = getStableRegime();
-  const stepMultiplier = (regime === 'TRENDING') ? 0.7 : (regime === 'CHOPPY') ? 1.3 : 1.0;
-  const effectiveMaxStep = MAX_STEP * stepMultiplier;
+A real-time options chain analysis tool that processes NIFTY option chain data to identify market structure, support/resistance levels, and generate trading signals.
 
-  // 2. Gather signals sorted by timestamp (performance fine)
-  const allRecent = signalHistory.slice(-LEARNING_WINDOW);
-  const sortedSignals = [...allRecent].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+## 🚀 Live Dashboard
 
-  // 3. Collect factor contributions for correlation & normalization
-  const factorContributions: Record<string, number[]> = {};
-  for (const factor of factorWeights) factorContributions[factor.name] = [];
-  for (const sig of sortedSignals) {
-    for (const factor of factorWeights) {
-      const contrib = sig.factorContributions?.[factor.name] ?? 0;
-      if (contrib !== 0) factorContributions[factor.name].push(contrib);
-    }
-  }
+[https://subhajitdeo.github.io/option-data.dna/](https://subhajitdeo.github.io/option-data.dna/)
 
-  // 4. Normalization factor (95th percentile)
-  const normFactor: Record<string, number> = {};
-  for (const factor of factorWeights) {
-    const absVals = factorContributions[factor.name].map(c => Math.abs(c));
-    if (absVals.length === 0) normFactor[factor.name] = 1e-6;
-    else {
-      const sorted = [...absVals].sort((a,b) => a - b);
-      const idx = Math.ceil((NORMALIZATION_PERCENTILE / 100) * sorted.length) - 1;
-      const val = sorted[Math.min(idx, sorted.length - 1)];
-      normFactor[factor.name] = Math.max(1e-6, val);
-    }
-  }
+## ⚠️ IMPORTANT DISCLAIMER
 
-  // 5. Pre‑compute factor directional accuracy (for exploration evaluation)
-  const factorAccuracy: Record<string, number> = {};
-  for (const factor of factorWeights) {
-    let correct = 0, total = 0;
-    for (const sig of sortedSignals.slice(-EXPLORATION_DELAY)) {
-      for (const win of VERIFICATION_WINDOWS) {
-        const outcome = sig.windowOutcomes[win.name];
-        if (!outcome.verified) continue;
-        if (sig.bias === 'NEUTRAL') continue;
-        const actualMove = outcome.actualMove ?? 0;
-        if (Math.abs(actualMove) < 1e-6) continue;
-        const contribution = sig.factorContributions?.[factor.name] ?? 0;
-        const factorDir = contribution > 0 ? 1 : (contribution < 0 ? -1 : 0);
-        const actualDir = actualMove > 0 ? 1 : -1;
-        if (factorDir === actualDir) correct++;
-        total++;
-      }
-    }
-    factorAccuracy[factor.name] = total > 0 ? correct / total : 0.5;
-  }
+**This tool is still under active development. DO NOT use it for real trading decisions.**
 
-  // 6. Process each factor
-  for (const factor of factorWeights) {
-    // [FIX 1] Safe stats access
-    const stats = globalThis.explorationStats[factor.name];
-    if (!stats) continue;
+- The developer does not take any responsibility for financial losses
+- This is a learning project, not a trading advisory service
+- Always consult a registered financial advisor before trading
+- Past signals do not guarantee future results
+- Use at your own risk
 
-    const uniquePredictions = new Set<string>();
-    let totalDirScore = 0, totalDirWeight = 0;
-    let totalMagScore = 0, totalMagWeight = 0;
-    let activeContributionCount = 0;
+## 📊 What It Does
 
-    for (let idx = 0; idx < sortedSignals.length; idx++) {
-      const sig = sortedSignals[idx];
-      let verifiedWeightSum = 0;
-      let predDirScore = 0, predDirWeight = 0;
-      let predMagScore = 0, predMagWeight = 0;
-      let hasActive = false;
+| Feature | Description |
+|---------|-------------|
+| **Live Market Analysis** | Fetches real-time NIFTY spot price and option chain data every 3 minutes |
+| **Support & Resistance** | Identifies key support and resistance levels from Put/Call OI clusters |
+| **Premium-Adjusted Levels** | Calculates true reversal levels using option premiums |
+| **Market Structure** | Detects 9 different market scenarios based on OI concentration |
+| **Trading Signals** | Generates clear BUY CE / BUY PE / WAIT signals with entry, target, and stop loss |
+| **Option Chain Viewer** | Displays ATM ±7 strikes with OI, volume, and OI changes |
+| **Trade History** | Automatically saves all generated trade signals for later review |
 
-      for (const win of VERIFICATION_WINDOWS) {
-        const outcome = sig.windowOutcomes[win.name];
-        if (!outcome.verified) continue;
-        const windowWeight = WINDOW_WEIGHTS[win.name] || 0.5;
-        verifiedWeightSum += windowWeight;
-        const contribution = sig.factorContributions?.[factor.name] ?? 0;
-        if (Math.abs(contribution) >= 5) hasActive = true;
-        if (sig.bias === 'NEUTRAL') continue;
+## 📈 How It Can Help (For Learning Purposes Only)
 
-        const actualMove = outcome.actualMove ?? 0;
-        const actualDir = actualMove > 0 ? 1 : (actualMove < 0 ? -1 : 0);
-        if (actualDir === 0) continue;
-        const factorDir = contribution > 0 ? 1 : (contribution < 0 ? -1 : 0);
-        const factorCorrect = (factorDir === actualDir);
+### 1. Understand Market Structure
+- See how support and resistance form from OI clusters
+- Learn how premium affects reversal levels
 
-        const strength = Math.min(1.0, Math.abs(contribution) / normFactor[factor.name]);
-        const directionalDelta = factorCorrect ? +strength : -strength;
-        predDirScore += directionalDelta * windowWeight;
-        predDirWeight += strength * windowWeight;
+### 2. Study Market Scenarios
+- Observe how different OI concentrations affect market direction
+- Track scenario changes over time
 
-        const maxMove = Math.min(2.0, Math.abs(actualMove) / 0.5);
-        const factorMagnitude = factorCorrect ? maxMove : 0;
-        predMagScore += factorMagnitude * windowWeight;
-        predMagWeight += maxMove * windowWeight;
-      }
+### 3. Paper Trading
+- Use the signals for practice trading
+- Keep a journal of what would have happened
 
-      if (verifiedWeightSum >= MIN_VERIFIED_WEIGHT && (predDirWeight > 0 || predMagWeight > 0)) {
-        const uniqueKey = `${sig.timestamp}_${sig.bias}`;
-        uniquePredictions.add(uniqueKey);
-        let recencyWeight = 1.0;
-        if (USE_RECENCY_WEIGHT && sortedSignals.length > 1) {
-          const timestamps = sortedSignals.map(s => new Date(s.timestamp).getTime());
-          const minTs = timestamps[0];
-          const maxTs = timestamps[timestamps.length-1];
-          const ageFactor = (new Date(sig.timestamp).getTime() - minTs) / (maxTs - minTs + 1e-6);
-          recencyWeight = 0.25 + 0.75 * Math.pow(ageFactor, 0.8);
-        }
-        totalDirScore += predDirScore * recencyWeight;
-        totalDirWeight += predDirWeight * recencyWeight;
-        totalMagScore += predMagScore * recencyWeight;
-        totalMagWeight += predMagWeight * recencyWeight;
-        if (hasActive) activeContributionCount++;
-      }
-    }
+### 4. Historical Analysis
+- Review past signals to understand market behavior
+- No real money involved – just learning
 
-    const sampleCount = uniquePredictions.size;
-    if (sampleCount < MIN_SAMPLES) continue;
+## 📊 Market Scenarios Detected
 
-    if (totalDirWeight > 0) {
-      const rawDir = totalDirScore / totalDirWeight;
-      const directionalAccuracy = (rawDir + 1) / 2;
-      let magnitudeRatio = directionalAccuracy;
-      if (totalMagWeight > 0) magnitudeRatio = totalMagScore / totalMagWeight;
-      const activityRatio = safeNum(activeContributionCount / sampleCount, 0);
+| Scenario | Market Behavior | Signal |
+|----------|-----------------|--------|
+| 1 | Consolidation / Rangebound | WAIT |
+| 2 | Bullish | BUY CE |
+| 3 | Bearish | BUY PE |
+| 4 | Bullish | BUY CE |
+| 5 | Highly Bullish | BUY CE |
+| 6 | Chaos | NO TRADE |
+| 7 | Bearish | BUY PE |
+| 8 | Whiplash | NO TRADE |
+| 9 | Highly Bearish | BUY PE |
 
-      // Correlation penalty (cached)
-      let correlationPenalty = 1.0;
-      const myContribs = factorContributions[factor.name];
-      if (myContribs && myContribs.length >= 20) {
-        let maxCorr = 0;
-        for (const other of Object.keys(factorContributions)) {
-          if (other === factor.name) continue;
-          const otherContribs = factorContributions[other];
-          if (!otherContribs || otherContribs.length < 20) continue;
-          const corr = cachedCorrelation(myContribs, otherContribs, factor.name, other);
-          if (Math.abs(corr) > maxCorr) maxCorr = Math.abs(corr);
-        }
-        if (maxCorr > CORRELATION_HARD_LIMIT) correlationPenalty = 0.2;
-        else if (maxCorr > CORRELATION_SOFT_LIMIT) correlationPenalty = 1 - (maxCorr - CORRELATION_SOFT_LIMIT);
-      }
+## 📁 Repository Structure
 
-      // Factor score
-      const baseScore = directionalAccuracy * DIRECTION_WEIGHT + magnitudeRatio * MAGNITUDE_WEIGHT;
-      const stabilityBoost = 0.6 + 0.4 * regimeStability;
-      let factorScore = baseScore * activityRatio * correlationPenalty * stabilityBoost;
-      factorScore = Math.min(1, Math.max(0, factorScore));
+```
+option-data.dna/
+├── .github/workflows/
+│   ├── fetch-option-chain.yml
+│   └── save_trades.yml
+├── data/
+│   ├── option_chain.tsv
+│   ├── spot_price.csv
+│   └── trades_history.json
+├── scripts/
+│   ├── save_trades.py
+│   └── advance code
+├── .gitignore
+├── README.md
+├── index.html
+└── view-trades.html
+```
 
-      // Confidence
-      const confidence = factorScore * 0.6 + correlationPenalty * 0.2 + Math.min(1, sampleCount / 30) * 0.2;
+## 🔧 How It Works (Technical)
 
-      // Stability guard
-      if (!isStableSample(sampleCount, confidence)) continue;
+```
+Google Sheets (NSE Data via Moneycontrol)
+         ↓
+Supabase Edge Function (Every 3 min)
+         ↓
+├─ Calculates Support/Resistance from OI clusters
+├─ Computes premium-adjusted reversal levels
+├─ Determines market scenario (1-9)
+├─ Generates trading action with entry, target, stop loss
+└─ Pushes to GitHub
+         ↓
+GitHub Pages Dashboard
+         ↓
+Study the signals for learning
+```
 
-      // Target weight
-      const targetWeight = 0.75 + Math.pow(factorScore, 1.5) * 1.25;
+## 📱 Mobile Support
 
-      // [FIX 3+4] Exploration: stage candidate, do NOT mutate immediately
-      if (shouldExplore(confidence, regimeStability) && !stats.pendingExploration) {
-        const p = stats.alpha / (stats.alpha + stats.beta);
-        const direction = Math.random() < p ? 1 : -1;
-        const candidateStep = direction * 0.05 * factor.weight;
-        const candidateWeight = Math.max(MIN_WEIGHT, Math.min(MAX_WEIGHT, factor.weight + candidateStep));
-        stats.pendingExploration = {
-          oldWeight: factor.weight,
-          candidateWeight,
-          direction,
-          oldScore: factorAccuracy[factor.name] || 0.5,
-          timestamp: Date.now(),
-          applied: false,
-        };
-      }
+The dashboard is fully responsive and works on mobile devices.
 
-      // Normal weight update (if no pending exploration or already applied)
-      if (!stats.pendingExploration || stats.pendingExploration.applied) {
-        let newWeight = applySafeWeightUpdate(factor.weight, targetWeight, regimeStability, effectiveMaxStep);
-        factor.weight = roundToTwo(newWeight);
-        factor.weight = roundToTwo(applyDriftClamp(factor.weight));
-      }
+## ⏱️ Update Frequencies
 
-      console.log(`📊 ${factor.name}: score ${factorScore.toFixed(3)}, conf ${confidence.toFixed(2)}, dirAcc ${(directionalAccuracy*100).toFixed(1)}%, magRatio ${(magnitudeRatio*100).toFixed(1)}%, act ${(activityRatio*100).toFixed(1)}%, corrPenalty ${correlationPenalty.toFixed(3)}, regime ${regime}, samples ${sampleCount}, weight → ${factor.weight}`);
-    }
-  }
+| Data | Frequency |
+|------|-----------|
+| Spot price & signals | Every 30 seconds |
+| Option chain | Every 5 minutes (market hours only) |
+| Trade history saving | Every 5 minutes |
 
-  // 7. Evaluate pending explorations after delay
-  for (const factor of factorWeights) {
-    const stats = globalThis.explorationStats[factor.name];
-    if (!stats || !stats.pendingExploration || stats.pendingExploration.applied) continue;
-    if (Date.now() - stats.pendingExploration.timestamp > EXPLORATION_DELAY * 3 * 60 * 1000) {
-      const currentScore = factorAccuracy[factor.name] || 0.5;
-      const improvement = evaluateImprovement(stats.pendingExploration.oldScore, currentScore);
-      if (improvement > EXPLORATION_IMPROVEMENT_THRESHOLD) {
-        factor.weight = roundToTwo(stats.pendingExploration.candidateWeight);
-        stats.alpha += 1;
-      } else {
-        stats.beta += 1;
-      }
-      stats.pendingExploration.applied = true;
-      stats.pendingExploration = null;
-    }
-  }
+## ⚠️ FINAL WARNING
 
-  // 8. Periodic cache cleanup
-  if (globalThis.correlationCache.size > 200) {
-    globalThis.correlationCache.clear();
-  }
-
-  await saveAllPersistentData();
-}
+**This is a learning project. The developer is not responsible for any financial decisions you make. Never trade with money you cannot afford to lose. Always consult a SEBI-registered advisor before trading.**
+```

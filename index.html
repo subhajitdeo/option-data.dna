@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LTP Calculator | Full Option Chain</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LTP Calculator | Investor Daddy | Complete Dashboard</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: linear-gradient(145deg, #0a0f1c 0%, #0f1625 100%);
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -13,6 +18,8 @@
             color: #e2e8f0;
             min-height: 100vh;
         }
+
+        /* Animated Background Dots */
         .dot-container {
             position: fixed;
             top: 0;
@@ -23,6 +30,7 @@
             z-index: 0;
             overflow: hidden;
         }
+
         .dot {
             position: absolute;
             background: rgba(56, 189, 248, 0.12);
@@ -31,13 +39,28 @@
             animation: floatDot linear infinite;
             filter: blur(2px);
         }
+
         @keyframes floatDot {
-            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
             10% { opacity: 0.5; }
             90% { opacity: 0.5; }
-            100% { transform: translateY(-20vh) translateX(40px) rotate(360deg); opacity: 0; }
+            100% {
+                transform: translateY(-20vh) translateX(40px) rotate(360deg);
+                opacity: 0;
+            }
         }
-        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -48,15 +71,22 @@
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         }
+
         .logo h1 {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.8rem;
+            font-weight: 700;
             background: linear-gradient(135deg, #c0e0ff, #7c9bff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .logo p { font-size: 0.7rem; color: #7f8ea3; margin-top: 4px; }
+
+        .logo p {
+            font-size: 0.75rem;
+            color: #7f8ea3;
+            margin-top: 4px;
+        }
+
         .live-badge {
             display: flex;
             align-items: center;
@@ -67,6 +97,7 @@
             border-radius: 40px;
             border: 1px solid rgba(56, 189, 248, 0.2);
         }
+
         .live-dot {
             width: 10px;
             height: 10px;
@@ -77,210 +108,290 @@
             display: inline-block;
             margin-right: 6px;
         }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.6; transform: scale(1.1); }
         }
+
+        /* KPI Cards */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
             margin-bottom: 28px;
         }
+
         .kpi-card {
             background: rgba(15, 25, 45, 0.45);
             backdrop-filter: blur(12px);
             border-radius: 24px;
-            padding: 18px;
+            padding: 20px;
             border: 1px solid rgba(56, 189, 248, 0.15);
+            transition: all 0.3s ease;
         }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            background: rgba(15, 25, 45, 0.65);
+            border-color: rgba(56, 189, 248, 0.35);
+        }
+
         .kpi-label {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: #7f8ea3;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
-        .kpi-value { font-size: 1.6rem; font-weight: 700; font-family: monospace; }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        /* Support & Resistance Panels */
         .dual-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
             margin-bottom: 28px;
         }
+
         .panel {
             background: rgba(15, 25, 45, 0.45);
             backdrop-filter: blur(12px);
             border-radius: 28px;
-            padding: 22px;
+            padding: 24px;
             border: 1px solid rgba(56, 189, 248, 0.15);
         }
+
         .panel-title {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
             color: #7f8ea3;
         }
+
         .level-row {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            align-items: center;
+            padding: 14px 0;
             border-bottom: 1px solid rgba(56, 189, 248, 0.1);
         }
-        .level-row:last-child { border-bottom: none; }
-        .level-number { font-family: monospace; font-size: 1.4rem; font-weight: 600; }
+
+        .level-row:last-child {
+            border-bottom: none;
+        }
+
+        .level-number {
+            font-family: monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
         .support-number { color: #2ecc71; }
         .resistance-number { color: #e74c3c; }
         .eos-number { color: #2ecc71; }
         .eor-number { color: #e74c3c; }
+
         .badge {
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 40px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 500;
             background: rgba(30, 42, 58, 0.7);
         }
+
+        /* Scenario Analysis Card */
         .scenario-card {
             background: rgba(15, 25, 45, 0.45);
             backdrop-filter: blur(12px);
             border-radius: 32px;
-            padding: 24px;
+            padding: 28px;
             margin-bottom: 28px;
             border: 1px solid rgba(56, 189, 248, 0.15);
         }
+
         .scenario-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.15);
         }
-        .scenario-title { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .trade-decision {
+
+        .scenario-title {
             font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .trade-decision {
+            font-size: 1.5rem;
             font-weight: 800;
-            padding: 8px 24px;
+            padding: 10px 28px;
             border-radius: 60px;
             background: rgba(15, 25, 45, 0.7);
         }
+
         .buy-ce { color: #2ecc71; border: 1px solid #2ecc7133; }
         .buy-pe { color: #e74c3c; border: 1px solid #e74c3c33; }
         .wait { color: #f39c12; border: 1px solid #f39c1233; }
         .no-trade { color: #95a5a6; border: 1px solid #95a5a633; }
+
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 18px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
         }
+
         .info-card {
             background: rgba(15, 25, 45, 0.45);
             backdrop-filter: blur(8px);
             border-radius: 20px;
-            padding: 16px;
+            padding: 18px;
             border: 1px solid rgba(56, 189, 248, 0.1);
         }
+
         .info-label {
             font-size: 0.65rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
             color: #7f8ea3;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
+
+        .info-card div {
+            line-height: 1.5;
+        }
+
         .level-line {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 8px;
+            gap: 15px;
+            margin-top: 10px;
         }
-        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.1rem; }
-        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.1rem; }
-        .diff-positive { color: #2ecc71; font-size: 0.75rem; }
-        .diff-negative { color: #ef4444; font-size: 0.75rem; }
+
+        .target-level { color: #2ecc71; font-weight: 700; font-size: 1.2rem; }
+        .sl-level { color: #ef4444; font-weight: 700; font-size: 1.2rem; }
+        .diff-positive { color: #2ecc71; font-size: 0.8rem; margin-left: 5px; }
+        .diff-negative { color: #ef4444; font-size: 0.8rem; margin-left: 5px; }
+
         .proximity-alert {
-            margin-top: 16px;
-            padding: 12px;
+            margin-top: 20px;
+            padding: 14px;
             background: rgba(26, 31, 46, 0.7);
             backdrop-filter: blur(8px);
             border-radius: 16px;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             text-align: center;
             color: #f39c12;
         }
+
+        /* Option Chain Table */
         .table-container {
             background: rgba(15, 25, 45, 0.35);
             backdrop-filter: blur(12px);
             border-radius: 28px;
-            padding: 20px;
+            padding: 24px;
             border: 1px solid rgba(56, 189, 248, 0.15);
             overflow-x: auto;
             margin-bottom: 28px;
         }
+
         .option-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 700px;
+            font-size: 0.85rem;
+            min-width: 800px;
         }
+
         .option-table th {
             text-align: center;
-            padding: 12px 8px;
+            padding: 14px 10px;
             background: rgba(20, 30, 50, 0.6);
             color: #7f8ea3;
             font-weight: 600;
             font-size: 0.7rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         }
+
         .option-table td {
             text-align: center;
-            padding: 10px 6px;
+            padding: 12px 8px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.08);
             font-family: monospace;
+            font-weight: 500;
         }
+
         .call-positive { color: #2ecc71; }
         .call-negative { color: #e74c3c; }
         .put-positive { color: #e74c3c; }
         .put-negative { color: #2ecc71; }
+
         .strike-cell {
             font-weight: 700;
             color: #f39c12;
             background: rgba(243, 156, 18, 0.08);
+            font-size: 0.9rem;
         }
+
         .atm-row {
             background: rgba(56, 189, 248, 0.08);
         }
+        .atm-row td {
+            border-top: 1px solid rgba(56, 189, 248, 0.3);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
         .last-update {
             font-size: 0.7rem;
             color: #5a6a8a;
             text-align: right;
             margin-top: 10px;
         }
+
         .footer {
             text-align: center;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: #5a6a8a;
             margin-top: 20px;
             padding-top: 16px;
             border-top: 1px solid rgba(56, 189, 248, 0.15);
         }
+
         @media (max-width: 768px) {
             body { padding: 12px; }
             .dual-panel { grid-template-columns: 1fr; gap: 16px; }
-            .kpi-value { font-size: 1.2rem; }
-            .option-table { font-size: 0.65rem; min-width: 550px; }
+            .kpi-value { font-size: 1.3rem; }
+            .level-number { font-size: 1.1rem; }
+            .trade-decision { font-size: 1.1rem; padding: 6px 18px; }
+            .scenario-title { font-size: 1rem; }
+            .option-table { font-size: 0.7rem; min-width: 650px; }
+            .info-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 <div class="dot-container" id="dotContainer"></div>
 <div class="container">
+    <!-- Header -->
     <div class="header">
         <div class="logo">
             <h1>📊 LTP CALCULATOR</h1>
@@ -300,21 +411,21 @@
         <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
     </div>
 
-    <!-- Support & Resistance -->
+    <!-- Support & Resistance Panels -->
     <div class="dual-panel">
         <div class="panel">
-            <div class="panel-title">🟢 SUPPORT</div>
+            <div class="panel-title">🟢 SUPPORT STRUCTURE</div>
             <div class="level-row"><span>Strike</span><span class="level-number support-number" id="supStrike">---</span></div>
             <div class="level-row"><span>State</span><span class="badge" id="supState">---</span></div>
             <div class="level-row"><span>OI Strength</span><span id="supStrength">---</span></div>
-            <div class="level-row"><span>EOS</span><span class="level-number eos-number" id="eosVal">---</span></div>
+            <div class="level-row"><span>EOS (Extension of Support)</span><span class="level-number eos-number" id="eosVal">---</span></div>
         </div>
         <div class="panel">
-            <div class="panel-title">🔴 RESISTANCE</div>
+            <div class="panel-title">🔴 RESISTANCE STRUCTURE</div>
             <div class="level-row"><span>Strike</span><span class="level-number resistance-number" id="resStrike">---</span></div>
             <div class="level-row"><span>State</span><span class="badge" id="resState">---</span></div>
             <div class="level-row"><span>OI Strength</span><span id="resStrength">---</span></div>
-            <div class="level-row"><span>EOR</span><span class="level-number eor-number" id="eorVal">---</span></div>
+            <div class="level-row"><span>EOR (Extension of Resistance)</span><span class="level-number eor-number" id="eorVal">---</span></div>
         </div>
     </div>
 
@@ -323,7 +434,7 @@
         <div id="scenarioContent">Loading analysis...</div>
     </div>
 
-    <!-- Option Chain Table (REAL DATA from GitHub) -->
+    <!-- Option Chain Table -->
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <div class="panel-title">📋 OPTION CHAIN (REAL TIME)</div>
@@ -342,36 +453,125 @@
                 </tr>
             </thead>
             <tbody id="optionTableBody">
-                <tr><td colspan="7">Loading option chain...<td></tr>
+                <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="footer">
-        ⏱️ LTP data refreshes every 30s | Option chain updates every 5 min (GitHub Action)
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes (GitHub Action)
     </div>
 </div>
 
 <script>
+    // ============================================================
+    // LEVEL 1: SCENARIO RULES (EDIT THIS SECTION ONLY)
+    // ============================================================
+    const SCENARIO_RULES = {
+        1: {
+            name: "CONSOLIDATION",
+            title: "⚖️ CONSOLIDATION (Rangebound)",
+            action: "WAIT",
+            color: "wait",
+            marketState: "Both support and resistance are STRONG or MODERATE. No clear direction.",
+            outcome: "Price oscillates between EOS and EOR. First touch to either level = high probability reversal.",
+            instruction: "BUY CE at EOS, BUY PE at EOR. Avoid middle zone.",
+            riskNote: "Multiple touches increase breakout risk. First hit is safest."
+        },
+        2: {
+            name: "BULLISH",
+            title: "📈 BULLISH (Support STRONG, Resistance WTT)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
+            outcome: "Buying pressure building. Market likely to move up.",
+            instruction: "BUY CE at EOS or every Put Diversion.",
+            riskNote: "Avoid selling Puts. First hit to EOS is safest."
+        },
+        3: {
+            name: "BEARISH",
+            title: "📉 BEARISH (Resistance STRONG, Support WTB)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
+            outcome: "Selling pressure building. Market likely to move down.",
+            instruction: "BUY PE at EOR or every Call Diversion.",
+            riskNote: "Avoid buying Calls. First hit to EOR is safest."
+        },
+        4: {
+            name: "BULLISH",
+            title: "🟢 BULLISH (Support WTT, Resistance STRONG)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Support is WTT (Weak Towards Top). Resistance is STRONG.",
+            outcome: "Support shifting upward. Mild bullish momentum.",
+            instruction: "BUY CE at EOS. Target next upper diversion.",
+            riskNote: "Avoid selling Puts. Watch for support migration."
+        },
+        5: {
+            name: "HIGHLY_BULLISH",
+            title: "🚀 HIGHLY BULLISH (Rocket Market – Both WTT)",
+            action: "BUY CE",
+            color: "buy-ce",
+            marketState: "Both sides WTT. Institutional money moving to higher strikes.",
+            outcome: "Unstoppable upward momentum. Breakout above EOR likely.",
+            instruction: "BUY CE aggressively at every dip. Hold past EOR.",
+            riskNote: "No PE buying. Trend is your friend."
+        },
+        6: {
+            name: "CHAOS",
+            title: "🌀 CHAOS (No Trade – WTB + WTT)",
+            action: "NO TRADE",
+            color: "no-trade",
+            marketState: "Support WTB, Resistance WTT. Conflicting signals.",
+            outcome: "Market squeeze / volatile compression. False breakouts expected.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "Wait for either side to become STRONG before entering."
+        },
+        7: {
+            name: "BEARISH",
+            title: "🔻 BEARISH (Support WTB, Resistance STRONG)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Support WTB, Resistance STRONG. Downward pressure.",
+            outcome: "Bearish momentum. Breakdown below EOS likely.",
+            instruction: "BUY PE at EOR. Target lower diversion band.",
+            riskNote: "Avoid buying Calls. Let the downtrend play out."
+        },
+        8: {
+            name: "WHIPLASH",
+            title: "⚡ WHIPLASH (No Trade – WTT + WTB)",
+            action: "NO TRADE",
+            color: "no-trade",
+            marketState: "Support WTT, Resistance WTB. High whipsaw risk.",
+            outcome: "Intraday spikes. Premium decay risk.",
+            instruction: "STAY FLAT. No trading zone.",
+            riskNote: "High risk of losses. Avoid options buying."
+        },
+        9: {
+            name: "CRASH",
+            title: "💥 CRASH MODE (Highly Bearish – Both WTB)",
+            action: "BUY PE",
+            color: "buy-pe",
+            marketState: "Both sides WTB. Institutional money moving to lower strikes.",
+            outcome: "Unstoppable downward momentum. Breakdown below EOS likely.",
+            instruction: "BUY PE aggressively at every rise. Hold below EOS.",
+            riskNote: "No CE buying. Aggressive short positioning."
+        }
+    };
+
+    // ============================================================
+    // LEVEL 2: CONFIGURATION (EDIT URLs IF NEEDED)
+    // ============================================================
     const JSON_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data.json';
     const OPTION_CHAIN_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/option_chain.tsv';
     const SPOT_CSV_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/spot_price.csv';
 
-    let currentData = null;
-
-    // ========== SCENARIO RULES ==========
-    const scenarioRules = {
-        1: { title: "⚖️ CONSOLIDATION", action: "WAIT", actionClass: "wait", marketState: "Both support & resistance balanced.", possibleOutcome: "Rangebound market.", whatToDo: "Trade only at EOS or EOR." },
-        2: { title: "📈 BULLISH", action: "BUY CE", actionClass: "buy-ce", marketState: "Support STRONG, Resistance WTT.", possibleOutcome: "Upward momentum expected.", whatToDo: "Buy CE at EOS." },
-        3: { title: "📉 BEARISH", action: "BUY PE", actionClass: "buy-pe", marketState: "Resistance STRONG, Support WTB.", possibleOutcome: "Downward momentum expected.", whatToDo: "Buy PE at EOR." },
-        4: { title: "🟢 BULLISH", action: "BUY CE", actionClass: "buy-ce", marketState: "Support WTT, Resistance STRONG.", possibleOutcome: "Mild bullish.", whatToDo: "Buy CE at EOS." },
-        5: { title: "🚀 HIGHLY BULLISH", action: "BUY CE", actionClass: "buy-ce", marketState: "Both sides WTT.", possibleOutcome: "Rocket market.", whatToDo: "Aggressive CE buying." },
-        6: { title: "🌀 CHAOS", action: "NO TRADE", actionClass: "no-trade", marketState: "Conflicting signals.", possibleOutcome: "Avoid trading.", whatToDo: "Stay flat." },
-        7: { title: "🔻 BEARISH", action: "BUY PE", actionClass: "buy-pe", marketState: "Support WTB, Resistance STRONG.", possibleOutcome: "Bearish pressure.", whatToDo: "Buy PE at EOR." },
-        8: { title: "⚡ WHIPLASH", action: "NO TRADE", actionClass: "no-trade", marketState: "High whipsaw risk.", possibleOutcome: "Avoid trading.", whatToDo: "Stay flat." },
-        9: { title: "💥 CRASH MODE", action: "BUY PE", actionClass: "buy-pe", marketState: "Both sides WTB.", possibleOutcome: "Highly bearish.", whatToDo: "Aggressive PE buying." }
-    };
-
+    // ============================================================
+    // LEVEL 3: CORE FUNCTIONS (DO NOT EDIT UNLESS NEEDED)
+    // ============================================================
+    
+    // Background dots
     function createDots() {
         const container = document.getElementById('dotContainer');
         const dotCount = window.innerWidth < 768 ? 30 : 60;
@@ -379,8 +579,9 @@
         for (let i = 0; i < dotCount; i++) {
             const dot = document.createElement('div');
             dot.classList.add('dot');
-            dot.style.width = `${Math.random() * 50 + 15}px`;
-            dot.style.height = dot.style.width;
+            const size = Math.random() * 50 + 15;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
             dot.style.left = `${Math.random() * 100}%`;
             dot.style.animationDuration = `${Math.random() * 20 + 12}s`;
             dot.style.animationDelay = `${Math.random() * 15}s`;
@@ -392,168 +593,216 @@
     function formatPoints(num) { return num?.toFixed(2) || '---'; }
     function formatNumber(num) { return num?.toLocaleString('en-IN') || '---'; }
 
-    // ========== RENDER OPTION CHAIN FROM TSV ==========
-    async function loadOptionChain() {
-        try {
-            const response = await fetch(`${OPTION_CHAIN_URL}?t=${Date.now()}`);
-            if (!response.ok) throw new Error('Option chain not available');
-            const text = await response.text();
-            const lines = text.split('\n').filter(l => l.trim());
-            
-            // Find data start (first line with numeric strike)
-            let startIdx = 0;
-            for (let i = 0; i < lines.length; i++) {
-                const parts = lines[i].split('\t');
-                if (parts.length > 5 && /^\d+$/.test(parts[5]?.trim())) {
-                    startIdx = i;
-                    break;
-                }
-            }
-            
-            const tbody = document.getElementById('optionTableBody');
-            tbody.innerHTML = '';
-            
-            // Get current spot for ATM highlighting
-            let spot = 23366.7;
-            try {
-                const spotRes = await fetch(`${SPOT_CSV_URL}?t=${Date.now()}`);
-                if (spotRes.ok) {
-                    const spotText = await spotRes.text();
-                    spot = parseFloat(spotText.split(',')[0]) || spot;
-                }
-            } catch(e) {}
-            
-            const atmStrike = Math.round(spot / 50) * 50;
-            let rowCount = 0;
-            
-            for (let i = startIdx; i < lines.length && rowCount < 50; i++) {
-                const parts = lines[i].split('\t');
-                if (parts.length < 11) continue;
-                
-                const strike = parseFloat(parts[5]);
-                if (isNaN(strike) || strike < 20000 || strike > 26000) continue;
-                
-                const isATM = Math.abs(strike - atmStrike) <= 25;
-                const row = tbody.insertRow();
-                if (isATM) row.classList.add('atm-row');
-                
-                // CALL OI
-                row.insertCell(0).innerHTML = formatNumber(parseFloat(parts[0]));
-                // CALL OI CHANGE
-                const callChange = parseFloat(parts[1]);
-                row.insertCell(1).innerHTML = callChange >= 0 ? `+${formatNumber(callChange)}` : formatNumber(callChange);
-                row.insertCell(1).className = callChange >= 0 ? 'call-positive' : 'call-negative';
-                // CALL VOLUME
-                row.insertCell(2).innerHTML = formatNumber(parseFloat(parts[2]));
-                // STRIKE
-                const strikeCell = row.insertCell(3);
-                strikeCell.innerHTML = strike.toLocaleString('en-IN');
-                strikeCell.className = 'strike-cell';
-                // PUT VOLUME
-                row.insertCell(4).innerHTML = formatNumber(parseFloat(parts[8]));
-                // PUT OI CHANGE
-                const putChange = parseFloat(parts[9]);
-                row.insertCell(5).innerHTML = putChange >= 0 ? `+${formatNumber(putChange)}` : formatNumber(putChange);
-                row.insertCell(5).className = putChange >= 0 ? 'put-positive' : 'put-negative';
-                // PUT OI
-                row.insertCell(6).innerHTML = formatNumber(parseFloat(parts[10]));
-                
-                rowCount++;
-            }
-            
-            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
-            
-        } catch (err) {
-            console.error('Option chain error:', err);
-            document.getElementById('optionTableBody').innerHTML = '<tr><td colspan="7">Option chain data unavailable. GitHub Action may not have run yet.<td></tr>';
-        }
+    function cleanNumber(str) {
+        if (!str || str === '-' || str === '') return 0;
+        return parseFloat(str.replace(/,/g, '')) || 0;
     }
 
-    // ========== RENDER SCENARIO ANALYSIS ==========
-    function renderScenarioAnalysis(d) {
-        const spot = d.spot_price || 0;
-        const eos = d.levels?.eos || 0;
-        const eor = d.levels?.eor || 0;
-        const scenarioId = d.coa_scenario || 1;
-        const rule = scenarioRules[scenarioId] || scenarioRules[1];
+    function getATMStrike(spot) {
+        return Math.round(spot / 50) * 50;
+    }
 
-        const isBuyCE = rule.action === 'BUY CE';
-        const targetPrice = isBuyCE ? eor : eos;
-        const stopPrice = isBuyCE ? eos - 20 : eor + 20;
-        const targetDiff = (targetPrice - spot).toFixed(2);
-        const stopDiff = (stopPrice - spot).toFixed(2);
+    async function fetchJSON(url) {
+        const res = await fetch(`${url}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
 
+    async function fetchText(url) {
+        const res = await fetch(`${url}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+    }
+
+    // Parse option chain from TSV
+    function parseOptionChainTSV(text, spot) {
+        const lines = text.split('\n').filter(l => l.trim());
+        let startIdx = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const parts = lines[i].split('\t');
+            if (parts.length > 5 && /^\d+$/.test(parts[5]?.trim())) {
+                startIdx = i;
+                break;
+            }
+        }
+        
+        const atmStrike = getATMStrike(spot);
+        const strikes = [];
+        
+        for (let i = startIdx; i < lines.length && strikes.length < 40; i++) {
+            const p = lines[i].split('\t');
+            if (p.length < 11) continue;
+            const strike = cleanNumber(p[5]);
+            if (strike < 20000 || strike > 26000) continue;
+            strikes.push({
+                strike,
+                isATM: Math.abs(strike - atmStrike) <= 25,
+                callOi: cleanNumber(p[0]),
+                callOiChange: cleanNumber(p[1]),
+                callVolume: cleanNumber(p[2]),
+                putVolume: cleanNumber(p[8]),
+                putOiChange: cleanNumber(p[9]),
+                putOi: cleanNumber(p[10])
+            });
+        }
+        return strikes;
+    }
+
+    // Render option chain table
+    function renderOptionChainTable(strikes) {
+        const tbody = document.getElementById('optionTableBody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        strikes.forEach(s => {
+            const row = tbody.insertRow();
+            if (s.isATM) row.classList.add('atm-row');
+            
+            row.insertCell(0).innerHTML = formatNumber(s.callOi);
+            
+            const callChangeCell = row.insertCell(1);
+            callChangeCell.innerHTML = s.callOiChange >= 0 ? `+${formatNumber(s.callOiChange)}` : formatNumber(s.callOiChange);
+            callChangeCell.className = s.callOiChange >= 0 ? 'call-positive' : 'call-negative';
+            
+            row.insertCell(2).innerHTML = formatNumber(s.callVolume);
+            
+            const strikeCell = row.insertCell(3);
+            strikeCell.innerHTML = s.strike.toLocaleString('en-IN');
+            strikeCell.className = 'strike-cell';
+            
+            row.insertCell(4).innerHTML = formatNumber(s.putVolume);
+            
+            const putChangeCell = row.insertCell(5);
+            putChangeCell.innerHTML = s.putOiChange >= 0 ? `+${formatNumber(s.putOiChange)}` : formatNumber(s.putOiChange);
+            putChangeCell.className = s.putOiChange >= 0 ? 'put-positive' : 'put-negative';
+            
+            row.insertCell(6).innerHTML = formatNumber(s.putOi);
+        });
+    }
+
+    // Render scenario analysis
+    function renderScenarioAnalysis(data) {
+        const spot = data.spot_price || 0;
+        const eos = data.levels?.eos || 0;
+        const eor = data.levels?.eor || 0;
+        const scenarioId = data.coa_scenario || 1;
+        const rule = SCENARIO_RULES[scenarioId] || SCENARIO_RULES[1];
+        
+        const isLong = rule.action === 'BUY CE';
+        const entry = isLong ? eos : eor;
+        const target = isLong ? eor : eos;
+        const stop = isLong ? eos - 20 : eor + 20;
+        const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
+        
         const nearEOS = Math.abs(spot - eos) <= 20;
         const nearEOR = Math.abs(spot - eor) <= 20;
-        let alertMsg = nearEOS ? '⚠️ NEAR EOS – First hit safest' : (nearEOR ? '⚠️ NEAR EOR – First hit safest' : '📍 Between EOS and EOR');
-
-        const levelsHtml = (rule.action === 'BUY CE' || rule.action === 'BUY PE') ? `
+        const proximityMsg = nearEOS ? '⚠️ PRICE NEAR EOS – Watch for bounce / breakdown. FIRST HIT safest.' : 
+                             (nearEOR ? '⚠️ PRICE NEAR EOR – Watch for rejection / breakout. FIRST HIT safest.' : 
+                             '📍 Price between EOS and EOR. Wait for level test.');
+        
+        const levelsHtml = showLevels ? `
             <div class="info-card">
-                <div class="info-label">📐 YOUR LEVELS (${isBuyCE ? 'CE' : 'PE'})</div>
+                <div class="info-label">📐 YOUR LEVELS (${isLong ? 'CE' : 'PE'})</div>
                 <div class="level-line">
-                    <span>🎯 TARGET: <span class="target-level">${formatPoints(targetPrice)}</span> <span class="diff-positive">(${targetDiff >= 0 ? '+' : ''}${targetDiff})</span></span>
-                    <span>📍 SPOT: ${formatPoints(spot)}</span>
-                    <span>🛑 STOP: <span class="sl-level">${formatPoints(stopPrice)}</span> <span class="diff-negative">(${stopDiff >= 0 ? '+' : ''}${stopDiff})</span></span>
+                    <span>🎯 TARGET: <span class="target-level">${formatPoints(target)}</span> <span class="diff-positive">(${(target - spot) >= 0 ? '+' : ''}${(target - spot).toFixed(2)})</span></span>
+                    <span>📍 SPOT: <span style="color:#b0c4de; font-weight:600;">${formatPoints(spot)}</span></span>
+                    <span>🛑 STOP LOSS: <span class="sl-level">${formatPoints(stop)}</span> <span class="diff-negative">(${(stop - spot) >= 0 ? '+' : ''}${(stop - spot).toFixed(2)})</span></span>
                 </div>
+                <div style="margin-top: 12px; font-size:0.75rem; color:#7f8ea3;">Entry: ${formatPoints(entry)} (${(entry - spot) >= 0 ? '+' : ''}${(entry - spot).toFixed(2)})</div>
             </div>
         ` : '';
-
+        
         document.getElementById('scenarioContent').innerHTML = `
             <div class="scenario-header">
-                <div class="scenario-title"><span>${rule.title}</span><span class="badge">SCENARIO ${scenarioId}</span></div>
-                <div class="trade-decision ${rule.actionClass}">${rule.action}</div>
+                <div class="scenario-title">
+                    <span>${rule.title}</span>
+                    <span class="badge">SCENARIO ${scenarioId}</span>
+                </div>
+                <div class="trade-decision ${rule.color}">${rule.action}</div>
             </div>
             <div class="info-grid">
-                <div class="info-card"><div class="info-label">MARKET STATE</div><div>${rule.marketState}</div></div>
-                <div class="info-card"><div class="info-label">POSSIBLE OUTCOME</div><div>${rule.possibleOutcome}</div></div>
-                <div class="info-card"><div class="info-label">WHAT TO DO</div><div>${rule.whatToDo}</div></div>
+                <div class="info-card">
+                    <div class="info-label">MARKET STATE</div>
+                    <div style="font-weight:500;">${rule.marketState}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">POSSIBLE OUTCOME</div>
+                    <div style="font-weight:500;">${rule.outcome}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">WHAT TO DO</div>
+                    <div style="font-weight:500;">${rule.instruction}</div>
+                </div>
+                ${rule.riskNote ? `<div class="info-card"><div class="info-label">⚠️ RISK NOTE</div><div>${rule.riskNote}</div></div>` : ''}
             </div>
             ${levelsHtml}
-            <div class="proximity-alert">${alertMsg}</div>
+            <div class="proximity-alert">${proximityMsg}</div>
         `;
     }
 
-    // ========== LOAD LTP DATA ==========
+    // Update KPI and support/resistance panels
+    function updateKPI(data) {
+        document.getElementById('spotVal').innerHTML = `₹ ${formatPoints(data.spot_price)}`;
+        document.getElementById('pcrVal').innerHTML = data.pcr?.toFixed(3) || '---';
+        document.getElementById('scenarioVal').innerHTML = `SCENARIO ${data.coa_scenario || '?'}`;
+        const bias = data.market_bias || 'NEUTRAL';
+        const biasEl = document.getElementById('biasVal');
+        biasEl.innerHTML = bias;
+        biasEl.style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
+        
+        document.getElementById('supStrike').innerHTML = data.support?.strike || '---';
+        document.getElementById('supState').innerHTML = data.support?.state || '---';
+        document.getElementById('supStrength').innerHTML = `${data.support?.strength?.toFixed(1) || '0'}%`;
+        document.getElementById('eosVal').innerHTML = formatPoints(data.levels?.eos);
+        document.getElementById('resStrike').innerHTML = data.resistance?.strike || '---';
+        document.getElementById('resState').innerHTML = data.resistance?.state || '---';
+        document.getElementById('resStrength').innerHTML = `${data.resistance?.strength?.toFixed(1) || '0'}%`;
+        document.getElementById('eorVal').innerHTML = formatPoints(data.levels?.eor);
+        
+        if (data.timestamp) {
+            document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(data.timestamp).toLocaleTimeString()}`;
+        }
+    }
+
+    // Load LTP data from Edge Function
     async function loadLTPData() {
         try {
-            const res = await fetch(`${JSON_URL}?t=${Date.now()}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const d = await res.json();
-            
-            document.getElementById('spotVal').innerHTML = `₹ ${formatPoints(d.spot_price)}`;
-            document.getElementById('pcrVal').innerHTML = d.pcr?.toFixed(3) || '---';
-            document.getElementById('scenarioVal').innerHTML = `SCENARIO ${d.coa_scenario || '?'}`;
-            const bias = d.market_bias || 'NEUTRAL';
-            document.getElementById('biasVal').innerHTML = bias;
-            document.getElementById('biasVal').style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
-
-            document.getElementById('supStrike').innerHTML = d.support?.strike || '---';
-            document.getElementById('supState').innerHTML = d.support?.state || '---';
-            document.getElementById('supStrength').innerHTML = `${d.support?.strength?.toFixed(1) || '0'}%`;
-            document.getElementById('eosVal').innerHTML = formatPoints(d.levels?.eos);
-            document.getElementById('resStrike').innerHTML = d.resistance?.strike || '---';
-            document.getElementById('resState').innerHTML = d.resistance?.state || '---';
-            document.getElementById('resStrength').innerHTML = `${d.resistance?.strength?.toFixed(1) || '0'}%`;
-            document.getElementById('eorVal').innerHTML = formatPoints(d.levels?.eor);
-            
-            renderScenarioAnalysis(d);
-            
-            if (d.timestamp) {
-                document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(d.timestamp).toLocaleTimeString()}`;
-            }
+            const data = await fetchJSON(JSON_URL);
+            updateKPI(data);
+            renderScenarioAnalysis(data);
         } catch (err) {
             console.error(err);
             document.getElementById('timestampLabel').innerHTML = '⚠️ Connection error';
         }
     }
 
-    // Initialize
+    // Load option chain from GitHub (updated by GitHub Action)
+    async function loadOptionChain() {
+        try {
+            const spotText = await fetchText(SPOT_CSV_URL);
+            const spot = parseFloat(spotText.split(',')[0]) || 23366.7;
+            const tsvText = await fetchText(OPTION_CHAIN_URL);
+            const strikes = parseOptionChainTSV(tsvText, spot);
+            renderOptionChainTable(strikes);
+            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()}`;
+        } catch (err) {
+            console.error('Option chain error:', err);
+            const tbody = document.getElementById('optionTableBody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes.</td></tr>';
+            }
+        }
+    }
+
+    // ============================================================
+    // LEVEL 4: INITIALIZATION
+    // ============================================================
     createDots();
     loadLTPData();
     loadOptionChain();
     
-    setInterval(loadLTPData, 30000);
-    setInterval(loadOptionChain, 300000); // 5 minutes for option chain
+    setInterval(loadLTPData, 30000);      // Update LTP data every 30 seconds
+    setInterval(loadOptionChain, 300000); // Update option chain every 5 minutes
     
     window.addEventListener('resize', () => createDots());
 </script>

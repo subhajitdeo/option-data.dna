@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>yeppppp</title>
+    <title>LTP Calculator | Investor Daddy</title>
     <style>
         * {
             margin: 0;
@@ -17,6 +17,11 @@
             padding: 20px;
             color: #e2e8f0;
             min-height: 100vh;
+        }
+
+        /* Prevent auto-scroll to bottom on mobile */
+        html {
+            scroll-behavior: smooth;
         }
 
         /* Animated Background Dots */
@@ -114,7 +119,7 @@
             50% { opacity: 0.6; transform: scale(1.1); }
         }
 
-        /* KPI Cards */
+        /* KPI Cards - 3 cards only (SCENARIO removed) */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -300,7 +305,7 @@
             color: #f39c12;
         }
 
-        /* Option Chain Table - Mobile Optimized with Centered Strike */
+        /* Option Chain Table */
         .table-container {
             background: rgba(15, 25, 45, 0.35);
             backdrop-filter: blur(12px);
@@ -317,7 +322,6 @@
             font-size: 0.85rem;
         }
 
-        /* On mobile, make table more compact and ensure strike is visually centered */
         .option-table th, .option-table td {
             text-align: center;
             padding: 10px 6px;
@@ -350,7 +354,6 @@
 
         .atm-row {
             background: rgba(56, 189, 248, 0.15);
-            position: relative;
         }
         .atm-row td {
             border-top: 1px solid rgba(56, 189, 248, 0.4);
@@ -385,14 +388,6 @@
                 font-size: 0.65rem;
             }
             .strike-cell { font-size: 0.75rem; }
-            .option-table th { font-size: 0.6rem; }
-        }
-
-        @media (max-width: 480px) {
-            .option-table th, .option-table td { 
-                padding: 4px 2px; 
-                font-size: 0.6rem;
-            }
         }
     </style>
 </head>
@@ -411,15 +406,14 @@
         </div>
     </div>
 
-    <!-- KPI Grid -->
+    <!-- KPI Grid - SCENARIO CARD REMOVED (only 3 cards) -->
     <div class="kpi-grid">
         <div class="kpi-card"><div class="kpi-label">SPOT</div><div class="kpi-value" id="spotVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">PCR</div><div class="kpi-value" id="pcrVal">---</div></div>
-        <div class="kpi-card"><div class="kpi-label">SCENARIO</div><div class="kpi-value" id="scenarioVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
     </div>
 
-    <!-- Support & Resistance Panels (renamed EOS/EOR to Support/Resistance) -->
+    <!-- Support & Resistance Panels -->
     <div class="dual-panel">
         <div class="panel">
             <div class="panel-title">🟢 SUPPORT STRUCTURE</div>
@@ -442,7 +436,7 @@
         <div id="scenarioContent">Loading analysis...</div>
     </div>
 
-    <!-- Option Chain Table (ATM ±7 Strikes) - Centered ATM on mobile -->
+    <!-- Option Chain Table -->
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
             <div class="panel-title">📋 OPTION CHAIN (ATM ±7 Strikes)</div>
@@ -462,24 +456,32 @@
                     </tr>
                 </thead>
                 <tbody id="optionTableBody">
-                    <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td><tr>
+                    <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <div class="footer">
-        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes | ATM strike centered for easy reading
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes
     </div>
 </div>
 
 <script>
+    // ========== PREVENT AUTO-SCROLL TO BOTTOM ON MOBILE ==========
+    (function() {
+        // Force scroll to top on page load
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    })();
+
     // ============================================================
-    // LEVEL 1: SCENARIO RULES (EDIT THIS SECTION ONLY)
+    // LEVEL 1: SCENARIO RULES
     // ============================================================
     const SCENARIO_RULES = {
         1: {
-            name: "CONSOLIDATION",
             title: "⚖️ CONSOLIDATION (Rangebound)",
             action: "WAIT",
             color: "wait",
@@ -489,7 +491,6 @@
             riskNote: "Multiple touches increase breakout risk. First hit is safest."
         },
         2: {
-            name: "BULLISH",
             title: "📈 BULLISH (Support STRONG, Resistance WTT)",
             action: "BUY CE",
             color: "buy-ce",
@@ -499,7 +500,6 @@
             riskNote: "Avoid selling Puts. First hit to Support is safest."
         },
         3: {
-            name: "BEARISH",
             title: "📉 BEARISH (Resistance STRONG, Support WTB)",
             action: "BUY PE",
             color: "buy-pe",
@@ -509,7 +509,6 @@
             riskNote: "Avoid buying Calls. First hit to Resistance is safest."
         },
         4: {
-            name: "BULLISH",
             title: "🟢 BULLISH (Support WTT, Resistance STRONG)",
             action: "BUY CE",
             color: "buy-ce",
@@ -519,7 +518,6 @@
             riskNote: "Avoid selling Puts. Watch for support migration."
         },
         5: {
-            name: "HIGHLY_BULLISH",
             title: "🚀 HIGHLY BULLISH (Rocket Market – Both WTT)",
             action: "BUY CE",
             color: "buy-ce",
@@ -529,7 +527,6 @@
             riskNote: "No PE buying. Trend is your friend."
         },
         6: {
-            name: "CHAOS",
             title: "🌀 CHAOS (No Trade – WTB + WTT)",
             action: "NO TRADE",
             color: "no-trade",
@@ -539,7 +536,6 @@
             riskNote: "Wait for either side to become STRONG before entering."
         },
         7: {
-            name: "BEARISH",
             title: "🔻 BEARISH (Support WTB, Resistance STRONG)",
             action: "BUY PE",
             color: "buy-pe",
@@ -549,7 +545,6 @@
             riskNote: "Avoid buying Calls. Let the downtrend play out."
         },
         8: {
-            name: "WHIPLASH",
             title: "⚡ WHIPLASH (No Trade – WTT + WTB)",
             action: "NO TRADE",
             color: "no-trade",
@@ -559,7 +554,6 @@
             riskNote: "High risk of losses. Avoid options buying."
         },
         9: {
-            name: "CRASH",
             title: "💥 CRASH MODE (Highly Bearish – Both WTB)",
             action: "BUY PE",
             color: "buy-pe",
@@ -571,7 +565,7 @@
     };
 
     // ============================================================
-    // LEVEL 2: CONFIGURATION (EDIT URLs IF NEEDED)
+    // LEVEL 2: CONFIGURATION
     // ============================================================
     const JSON_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data.json';
     const OPTION_CHAIN_URL = 'https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/option_chain.tsv';
@@ -581,7 +575,6 @@
     // LEVEL 3: CORE FUNCTIONS
     // ============================================================
     
-    // Background dots
     function createDots() {
         const container = document.getElementById('dotContainer');
         const dotCount = window.innerWidth < 768 ? 30 : 60;
@@ -602,15 +595,11 @@
 
     function formatPoints(num) { return num?.toFixed(2) || '---'; }
     function formatNumber(num) { return num?.toLocaleString('en-IN') || '---'; }
-
     function cleanNumber(str) {
         if (!str || str === '-' || str === '') return 0;
         return parseFloat(str.replace(/,/g, '')) || 0;
     }
-
-    function getATMStrike(spot) {
-        return Math.round(spot / 50) * 50;
-    }
+    function getATMStrike(spot) { return Math.round(spot / 50) * 50; }
 
     async function fetchJSON(url) {
         const res = await fetch(`${url}?t=${Date.now()}`);
@@ -624,7 +613,6 @@
         return res.text();
     }
 
-    // Parse option chain from TSV - ONLY ATM ±7 STRIKES
     function parseOptionChainTSV(text, spot) {
         const lines = text.split('\n').filter(l => l.trim());
         let startIdx = 0;
@@ -635,111 +623,66 @@
                 break;
             }
         }
-        
         const atmStrike = getATMStrike(spot);
-        // Calculate range: from ATM - 7 strikes to ATM + 7 strikes (50 points each)
         const minStrike = atmStrike - (7 * 50);
         const maxStrike = atmStrike + (7 * 50);
-        
         const strikes = [];
-        
         for (let i = startIdx; i < lines.length; i++) {
             const p = lines[i].split('\t');
             if (p.length < 11) continue;
             const strike = cleanNumber(p[5]);
             if (strike < 20000 || strike > 26000) continue;
-            // FILTER: Only strikes within ATM ±7 (350 points range)
             if (strike < minStrike || strike > maxStrike) continue;
-            
             strikes.push({
-                strike,
-                isATM: Math.abs(strike - atmStrike) <= 25,
-                callOi: cleanNumber(p[0]),
-                callOiChange: cleanNumber(p[1]),
-                callVolume: cleanNumber(p[2]),
-                putVolume: cleanNumber(p[8]),
-                putOiChange: cleanNumber(p[9]),
-                putOi: cleanNumber(p[10])
+                strike, isATM: Math.abs(strike - atmStrike) <= 25,
+                callOi: cleanNumber(p[0]), callOiChange: cleanNumber(p[1]),
+                callVolume: cleanNumber(p[2]), putVolume: cleanNumber(p[8]),
+                putOiChange: cleanNumber(p[9]), putOi: cleanNumber(p[10])
             });
         }
-        // Sort by strike price
         strikes.sort((a, b) => a.strike - b.strike);
-        
-        // For mobile: ensure ATM strike is in the middle by keeping all strikes
-        // The scroll container will allow horizontal scroll, but the ATM row is highlighted
         return strikes;
     }
 
-    // Scroll to ATM row on mobile (centers the ATM strike in the view)
-    function scrollToATMRow() {
-        // Small delay to ensure table is rendered
-        setTimeout(() => {
-            const atmRows = document.querySelectorAll('.atm-row');
-            if (atmRows.length > 0 && window.innerWidth < 768) {
-                atmRows[0].scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center',
-                    inline: 'center'
-                });
-            }
-        }, 500);
-    }
-
-    // Render option chain table
     function renderOptionChainTable(strikes) {
         const tbody = document.getElementById('optionTableBody');
         if (!tbody) return;
-        
         tbody.innerHTML = '';
         strikes.forEach(s => {
             const row = tbody.insertRow();
             if (s.isATM) row.classList.add('atm-row');
-            
             row.insertCell(0).innerHTML = formatNumber(s.callOi);
-            
             const callChangeCell = row.insertCell(1);
             callChangeCell.innerHTML = s.callOiChange >= 0 ? `+${formatNumber(s.callOiChange)}` : formatNumber(s.callOiChange);
             callChangeCell.className = s.callOiChange >= 0 ? 'call-positive' : 'call-negative';
-            
             row.insertCell(2).innerHTML = formatNumber(s.callVolume);
-            
             const strikeCell = row.insertCell(3);
             strikeCell.innerHTML = s.strike.toLocaleString('en-IN');
             strikeCell.className = 'strike-cell';
-            
             row.insertCell(4).innerHTML = formatNumber(s.putVolume);
-            
             const putChangeCell = row.insertCell(5);
             putChangeCell.innerHTML = s.putOiChange >= 0 ? `+${formatNumber(s.putOiChange)}` : formatNumber(s.putOiChange);
             putChangeCell.className = s.putOiChange >= 0 ? 'put-positive' : 'put-negative';
-            
             row.insertCell(6).innerHTML = formatNumber(s.putOi);
         });
-        
-        // Auto-scroll to ATM row on mobile for better UX
-        scrollToATMRow();
     }
 
-    // Render scenario analysis (updated to use Support/Resistance terminology)
     function renderScenarioAnalysis(data) {
         const spot = data.spot_price || 0;
-        const supportLevel = data.levels?.eos || 0;   // EOS renamed to Support Level
-        const resistanceLevel = data.levels?.eor || 0; // EOR renamed to Resistance Level
+        const supportLevel = data.levels?.eos || 0;
+        const resistanceLevel = data.levels?.eor || 0;
         const scenarioId = data.coa_scenario || 1;
         const rule = SCENARIO_RULES[scenarioId] || SCENARIO_RULES[1];
-        
         const isLong = rule.action === 'BUY CE';
         const entry = isLong ? supportLevel : resistanceLevel;
         const target = isLong ? resistanceLevel : supportLevel;
         const stop = isLong ? supportLevel - 20 : resistanceLevel + 20;
         const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
-        
         const nearSupport = Math.abs(spot - supportLevel) <= 20;
         const nearResistance = Math.abs(spot - resistanceLevel) <= 20;
         const proximityMsg = nearSupport ? '⚠️ PRICE NEAR SUPPORT – Watch for bounce / breakdown. FIRST HIT safest.' : 
                              (nearResistance ? '⚠️ PRICE NEAR RESISTANCE – Watch for rejection / breakout. FIRST HIT safest.' : 
                              '📍 Price between Support and Resistance. Wait for level test.');
-        
         const levelsHtml = showLevels ? `
             <div class="info-card">
                 <div class="info-label">📐 YOUR LEVELS (${isLong ? 'CE' : 'PE'})</div>
@@ -748,31 +691,18 @@
                     <span>📍 SPOT: <span style="color:#b0c4de; font-weight:600;">${formatPoints(spot)}</span></span>
                     <span>🛑 STOP LOSS: <span class="sl-level">${formatPoints(stop)}</span> <span class="diff-negative">(${(stop - spot) >= 0 ? '+' : ''}${(stop - spot).toFixed(2)})</span></span>
                 </div>
-                <div style="margin-top: 12px; font-size:0.75rem; color:#7f8ea3;">Entry: ${formatPoints(entry)} (${(entry - spot) >= 0 ? '+' : ''}${(entry - spot).toFixed(2)})</div>
+                <div style="margin-top: 12px;">Entry: ${formatPoints(entry)} (${(entry - spot) >= 0 ? '+' : ''}${(entry - spot).toFixed(2)})</div>
             </div>
         ` : '';
-        
         document.getElementById('scenarioContent').innerHTML = `
             <div class="scenario-header">
-                <div class="scenario-title">
-                    <span>${rule.title}</span>
-                    <span class="badge">SCENARIO ${scenarioId}</span>
-                </div>
+                <div class="scenario-title"><span>${rule.title}</span><span class="badge">SCENARIO ${scenarioId}</span></div>
                 <div class="trade-decision ${rule.color}">${rule.action}</div>
             </div>
             <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-label">MARKET STATE</div>
-                    <div style="font-weight:500;">${rule.marketState}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">POSSIBLE OUTCOME</div>
-                    <div style="font-weight:500;">${rule.outcome}</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">WHAT TO DO</div>
-                    <div style="font-weight:500;">${rule.instruction}</div>
-                </div>
+                <div class="info-card"><div class="info-label">MARKET STATE</div><div>${rule.marketState}</div></div>
+                <div class="info-card"><div class="info-label">POSSIBLE OUTCOME</div><div>${rule.outcome}</div></div>
+                <div class="info-card"><div class="info-label">WHAT TO DO</div><div>${rule.instruction}</div></div>
                 ${rule.riskNote ? `<div class="info-card"><div class="info-label">⚠️ RISK NOTE</div><div>${rule.riskNote}</div></div>` : ''}
             </div>
             ${levelsHtml}
@@ -780,16 +710,13 @@
         `;
     }
 
-    // Update KPI and support/resistance panels
     function updateKPI(data) {
         document.getElementById('spotVal').innerHTML = `₹ ${formatPoints(data.spot_price)}`;
         document.getElementById('pcrVal').innerHTML = data.pcr?.toFixed(3) || '---';
-        document.getElementById('scenarioVal').innerHTML = `SCENARIO ${data.coa_scenario || '?'}`;
         const bias = data.market_bias || 'NEUTRAL';
         const biasEl = document.getElementById('biasVal');
         biasEl.innerHTML = bias;
         biasEl.style.color = bias === 'BULLISH' ? '#2ecc71' : (bias === 'BEARISH' ? '#e74c3c' : '#f39c12');
-        
         document.getElementById('supStrike').innerHTML = data.support?.strike || '---';
         document.getElementById('supState').innerHTML = data.support?.state || '---';
         document.getElementById('supStrength').innerHTML = `${data.support?.strength?.toFixed(1) || '0'}%`;
@@ -798,25 +725,21 @@
         document.getElementById('resState').innerHTML = data.resistance?.state || '---';
         document.getElementById('resStrength').innerHTML = `${data.resistance?.strength?.toFixed(1) || '0'}%`;
         document.getElementById('eorVal').innerHTML = formatPoints(data.levels?.eor);
-        
         if (data.timestamp) {
             document.getElementById('timestampLabel').innerHTML = `⏱️ ${new Date(data.timestamp).toLocaleTimeString()}`;
         }
     }
 
-    // Load LTP data from Edge Function
     async function loadLTPData() {
         try {
             const data = await fetchJSON(JSON_URL);
             updateKPI(data);
             renderScenarioAnalysis(data);
         } catch (err) {
-            console.error(err);
             document.getElementById('timestampLabel').innerHTML = '⚠️ Connection error';
         }
     }
 
-    // Load option chain from GitHub (updated by GitHub Action)
     async function loadOptionChain() {
         try {
             const spotText = await fetchText(SPOT_CSV_URL);
@@ -824,32 +747,20 @@
             const tsvText = await fetchText(OPTION_CHAIN_URL);
             const strikes = parseOptionChainTSV(tsvText, spot);
             renderOptionChainTable(strikes);
-            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()} | ATM ±7 strikes (${strikes.length} strikes)`;
+            document.getElementById('chainUpdateTime').innerHTML = `Updated: ${new Date().toLocaleTimeString()} | ${strikes.length} strikes`;
         } catch (err) {
-            console.error('Option chain error:', err);
             const tbody = document.getElementById('optionTableBody');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes. Showing ATM ±7 strikes only.</td></tr>';
-            }
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7">⏳ Loading... First run may take 5 minutes</td></tr>';
         }
     }
 
-    // ============================================================
-    // LEVEL 4: INITIALIZATION
-    // ============================================================
+    // ========== INITIALIZATION ==========
     createDots();
     loadLTPData();
     loadOptionChain();
-    
-    // Auto-refresh timers (page stays alive, data updates automatically)
-    setInterval(loadLTPData, 30000);      // Update LTP data every 30 seconds
-    setInterval(loadOptionChain, 300000); // Update option chain every 5 minutes
-    
-    // Re-center on resize for mobile
-    window.addEventListener('resize', () => {
-        createDots();
-        scrollToATMRow();
-    });
+    setInterval(loadLTPData, 30000);
+    setInterval(loadOptionChain, 300000);
+    window.addEventListener('resize', () => createDots());
 </script>
 </body>
 </html>

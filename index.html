@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>LTP Calculator | Investor Daddy | ATM ±7 Strikes</title>
+    <title>Nifty50 direction predictor</title>
     <style>
         * {
             margin: 0;
@@ -403,7 +403,7 @@
     <div class="header">
         <div class="logo">
             <h1>📊 LTP CALCULATOR</h1>
-            <p>Investor Daddy | COA 1.0 Framework | ATM ±7 Strikes</p>
+            <p>S 1.O Framework</p>
         </div>
         <div class="live-badge">
             <span><span class="live-dot"></span> LIVE</span>
@@ -415,7 +415,6 @@
     <div class="kpi-grid">
         <div class="kpi-card"><div class="kpi-label">SPOT</div><div class="kpi-value" id="spotVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">PCR</div><div class="kpi-value" id="pcrVal">---</div></div>
-        <div class="kpi-card"><div class="kpi-label">SCENARIO</div><div class="kpi-value" id="scenarioVal">---</div></div>
         <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
     </div>
 
@@ -445,7 +444,7 @@
     <!-- Option Chain Table (ATM ±7 Strikes) - Centered ATM on mobile -->
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-            <div class="panel-title">📋 OPTION CHAIN (ATM ±7 Strikes)</div>
+            <div class="panel-title">📋 OPTION CHAIN</div>
             <div id="chainUpdateTime" class="last-update"></div>
         </div>
         <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
@@ -469,7 +468,7 @@
     </div>
 
     <div class="footer">
-        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes | ATM strike centered for easy reading
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes 
     </div>
 </div>
 
@@ -850,6 +849,38 @@
         createDots();
         scrollToATMRow();
     });
+</script>
+    <script>
+    // ========== PREVENT AUTO-SCROLL TO BOTTOM ON MOBILE ==========
+    (function() {
+        // Store the current scroll position before page loads
+        let scrollY = 0;
+        
+        // Save scroll position before page unload/refresh
+        window.addEventListener('beforeunload', function() {
+            scrollY = window.scrollY;
+        });
+        
+        // Restore scroll position after page loads (prevents jumping to bottom)
+        window.addEventListener('load', function() {
+            // Small delay to ensure DOM is fully rendered
+            setTimeout(function() {
+                if (scrollY > 0) {
+                    window.scrollTo(0, scrollY);
+                } else {
+                    // Force scroll to top on initial load
+                    window.scrollTo(0, 0);
+                }
+            }, 10);
+        });
+        
+        // Also handle the case when page is loaded from cache (bfcache)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.scrollTo(0, 0);
+            }
+        });
+    })();
 </script>
 </body>
 </html>

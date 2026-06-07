@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       
       - name: Create data directory
         run: mkdir -p data
@@ -30,11 +28,11 @@ jobs:
       - name: Run trade saver
         run: python scripts/save_trades.py
       
-      - name: Commit and push
+      - name: Commit and push (force when needed)
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/trades_history.json
           git diff --staged --quiet || git commit -m "Update trades - $(date -u '+%Y-%m-%d %H:%M:%S')"
-          git pull origin main --no-edit --allow-unrelated-histories || true
-          git push origin main || echo "Push skipped - conflict will resolve next run"
+          git pull origin main --rebase --strategy-option=theirs || true
+          git push origin main --force-with-lease || true

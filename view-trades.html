@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade History Viewer</title>
+    <style>
+        body {
+            background: #0a0f1c;
+            font-family: monospace;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        pre {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 16px;
+            overflow-x: auto;
+            border: 1px solid #2d3748;
+        }
+        a {
+            color: #7c9bff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Trade History</h1>
+    <p><a href="https://github.com/subhajitdeo/option-data.dna/blob/main/data/trades_history.json" target="_blank">View on GitHub ↗</a></p>
+    <pre id="output">Loading...</pre>
+</div>
+<script>
+    fetch('https://raw.githubusercontent.com/subhajitdeo/option-data.dna/main/data/trades_history.json')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('output').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(() => {
+            document.getElementById('output').innerHTML = '[]';
+        });
+</script>
+</body>
+</html>

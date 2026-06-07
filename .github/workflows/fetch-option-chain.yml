@@ -3,8 +3,9 @@ name: Fetch Option Chain Data
 on:
   schedule:
     - cron: '*/5 * * * *'   # Every 5 minutes
-  workflow_dispatch:         # Manual trigger
-  permissions:
+  workflow_dispatch: # Manual trigger
+  
+permissions:
   contents: write
   
 jobs:

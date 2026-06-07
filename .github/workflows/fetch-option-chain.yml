@@ -2,12 +2,14 @@ name: Fetch Option Chain Data
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # Every 5 minutes
-  workflow_dispatch: # Manual trigger
-  
+    # Monday to Friday, every 5 minutes between 03:30 and 10:45 UTC
+    # This covers Nifty market hours (9:00 AM to 4:45 PM IST)
+    - cron: '*/5 3-10 * * 1-5'
+  workflow_dispatch:  # Manual trigger
+
 permissions:
   contents: write
-  
+
 jobs:
   fetch-option-chain:
     runs-on: ubuntu-latest
@@ -16,8 +18,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Fetch Option Chain from Google Sheets
+      - name: Check if within market hours (3:30 to 10:45 UTC)
         run: |
+          CURRENT_HOUR=$(date -u +%H)
+          CURRENT_MINUTE=$(date -u +%M)
+          
+          # Stop at 10:45 UTC (4:45 PM IST)
+          if [ $CURRENT_HOUR -eq 10 ] && [ $CURRENT_MINUTE -gt 45 ]; then
+            echo "After market hours (10:45 UTC). Skipping..."
+            exit 0
+          fi
+          
+          echo "Within market hours. Fetching data..."
+          
           curl -L "https://docs.google.com/spreadsheets/d/1bJ_O34GMpjm3sHgxiaBR0bnFTJHWuFXbZfYppkg5KXc/export?format=tsv&gid=0" > data/option_chain.tsv
           curl -L "https://docs.google.com/spreadsheets/d/1bJ_O34GMpjm3sHgxiaBR0bnFTJHWuFXbZfYppkg5KXc/export?format=csv&gid=1940171500" > data/spot_price.csv
       
@@ -26,5 +39,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/option_chain.tsv data/spot_price.csv
-          git diff --staged --quiet || git commit -m "Update option chain data - $(date -u '+%Y-%m-%d %H:%M:%S')"
+          git diff --staged --quiet || git commit -m "Update option chain data - $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
           git push

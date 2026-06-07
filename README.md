@@ -113,4 +113,5 @@ The dashboard is fully responsive and works on mobile devices.
 ## ⚠️ FINAL WARNING
 
 **This is a learning project. The developer is not responsible for any financial decisions you make. Never trade with money you cannot afford to lose. Always consult a SEBI-registered advisor before trading.**
-```
+
+

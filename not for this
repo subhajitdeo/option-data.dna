@@ -1,0 +1,193 @@
+// ============ SECTION: Learning Constants ============
+const MIN_WEIGHT = 0.30;
+const MAX_WEIGHT = 2.50;
+const MAX_STEP = 0.15;
+const MIN_SAMPLES = 10;
+const MIN_VERIFIED_WEIGHT = 1.0;
+const LEARNING_WINDOW = 50;
+const USE_RECENCY_WEIGHT = true;
+
+const DIRECTION_WEIGHT = 0.8;
+const MAGNITUDE_WEIGHT = 0.2;
+
+const WINDOW_WEIGHTS: Record<string, number> = {
+  '30m': 0.3,
+  '1h':  0.5,
+  '2h':  0.7,
+  'EOD': 1.0,
+};
+
+// Exploration rate (epsilon‑greedy)
+const EXPLORATION_RATE = 0.05;
+const EXPLORATION_RANGE = 0.1;   // ±10% random adjustment
+
+// Normalization percentile (95th to avoid outlier compression)
+const NORMALIZATION_PERCENTILE = 95;
+
+// Regime detection constants
+const HIGH_VOL_THRESHOLD = 0.015;   // daily volatility > 1.5% -> high vol
+const LOW_VOL_THRESHOLD = 0.005;    // daily volatility < 0.5% -> low vol
+
+// Regime‑dependent multiplier for the step limit (MAX_STEP)
+const REGIME_STEP_MULTIPLIER: Record<string, number> = {
+  'HIGH_VOL': 0.8,     // smaller steps in high vol (avoid overreaction)
+  'LOW_VOL':  1.2,     // larger steps in low vol (faster adaptation)
+  'NORMAL':   1.0,
+};
+
+// Helper: percentile with fallback
+function percentile(values: number[], p: number, fallback: number = 1e-6): number {
+  if (values.length === 0) return fallback;
+  const sorted = [...values].sort((a, b) => a - b);
+  const idx = Math.ceil((p / 100) * sorted.length) - 1;
+  const val = sorted[Math.min(idx, sorted.length - 1)];
+  return Math.max(fallback, val);
+}
+
+// Helper: detect current volatility regime from spot history
+function detectVolatilityRegime(): string {
+  if (historicalSpots.length < 20) return 'NORMAL';
+  const returns: number[] = [];
+  for (let i = 1; i < historicalSpots.length; i++) {
+    const prev = historicalSpots[i-1];
+    if (prev !== 0) returns.push(Math.abs(historicalSpots[i] - prev) / prev);
+  }
+  if (returns.length === 0) return 'NORMAL';
+  const avgDailyVol = returns.reduce((a,b) => a+b, 0) / returns.length;
+  if (avgDailyVol > HIGH_VOL_THRESHOLD) return 'HIGH_VOL';
+  if (avgDailyVol < LOW_VOL_THRESHOLD) return 'LOW_VOL';
+  return 'NORMAL';
+}
+
+async function updateFactorWeightsFromHistory() {
+  // Detect current volatility regime
+  const regime = detectVolatilityRegime();
+  const stepMultiplier = REGIME_STEP_MULTIPLIER[regime] || 1.0;
+  const effectiveMaxStep = MAX_STEP * stepMultiplier;
+
+  // Gather and sort signals by timestamp
+  const allRecent = signalHistory.slice(-LEARNING_WINDOW);
+  const sortedSignals = [...allRecent].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+  // Compute 95th percentile of absolute contributions for each factor
+  const factorContributions: Record<string, number[]> = {};
+  for (const factor of factorWeights) factorContributions[factor.name] = [];
+  for (const sig of sortedSignals) {
+    for (const factor of factorWeights) {
+      const contrib = Math.abs(sig.factorContributions?.[factor.name] ?? 0);
+      if (contrib > 0) factorContributions[factor.name].push(contrib);
+    }
+  }
+  const normFactor: Record<string, number> = {};
+  for (const factor of factorWeights) {
+    normFactor[factor.name] = percentile(factorContributions[factor.name], NORMALIZATION_PERCENTILE, 1e-6);
+  }
+
+  for (const factor of factorWeights) {
+    const uniquePredictions = new Set<string>();
+    let totalDirScore = 0, totalDirWeight = 0;
+    let totalMagScore = 0, totalMagWeight = 0;
+    let activeContributionCount = 0;
+
+    for (let idx = 0; idx < sortedSignals.length; idx++) {
+      const sig = sortedSignals[idx];
+      let verifiedWeightSum = 0;
+      let predDirScore = 0, predDirWeight = 0;
+      let predMagScore = 0, predMagWeight = 0;
+      let hasActive = false;
+
+      for (const win of VERIFICATION_WINDOWS) {
+        const outcome = sig.windowOutcomes[win.name];
+        if (!outcome.verified) continue;
+
+        const windowWeight = WINDOW_WEIGHTS[win.name] || 0.5;
+        verifiedWeightSum += windowWeight;
+
+        const contribution = sig.factorContributions?.[factor.name] ?? 0;
+        if (Math.abs(contribution) >= 5) hasActive = true;
+
+        const predictedNeutral = sig.bias === 'NEUTRAL';
+        if (predictedNeutral) continue;
+
+        // Actual market direction from price movement
+        const actualMove = outcome.actualMove ?? 0;
+        const actualDir = actualMove > 0 ? 1 : (actualMove < 0 ? -1 : 0);
+        if (actualDir === 0) continue;
+
+        const factorDir = contribution > 0 ? 1 : (contribution < 0 ? -1 : 0);
+        const factorCorrect = (factorDir === actualDir);
+
+        // Normalized strength (0..1) using 95th percentile
+        const strength = Math.min(1.0, Math.abs(contribution) / normFactor[factor.name]);
+        const directionalDelta = factorCorrect ? +strength : -strength;
+
+        predDirScore += directionalDelta * windowWeight;
+        predDirWeight += strength * windowWeight;
+
+        // [FIX] Magnitude component: use actual price move, NOT winScore (removes self‑reinforcement)
+        const maxMove = Math.min(2.0, Math.abs(actualMove) / 0.5);
+        const factorMagnitude = factorCorrect ? maxMove : 0;
+        predMagScore += factorMagnitude * windowWeight;
+        predMagWeight += maxMove * windowWeight;
+      }
+
+      if (verifiedWeightSum >= MIN_VERIFIED_WEIGHT && (predDirWeight > 0 || predMagWeight > 0)) {
+        const uniqueKey = `${sig.timestamp}_${sig.bias}`;
+        uniquePredictions.add(uniqueKey);
+
+        let recencyWeight = 1.0;
+        if (USE_RECENCY_WEIGHT && sortedSignals.length > 1) {
+          const timestamps = sortedSignals.map(s => new Date(s.timestamp).getTime());
+          const minTs = timestamps[0];
+          const maxTs = timestamps[timestamps.length - 1];
+          const range = maxTs - minTs;
+          const ageFactor = (new Date(sig.timestamp).getTime() - minTs) / (range + 1e-6);
+          recencyWeight = 0.25 + 0.75 * Math.pow(ageFactor, 0.8);
+        }
+
+        totalDirScore += predDirScore * recencyWeight;
+        totalDirWeight += predDirWeight * recencyWeight;
+        totalMagScore += predMagScore * recencyWeight;
+        totalMagWeight += predMagWeight * recencyWeight;
+
+        if (hasActive) activeContributionCount++;
+      }
+    }
+
+    const sampleCount = uniquePredictions.size;
+    if (sampleCount < MIN_SAMPLES) continue;
+
+    if (totalDirWeight > 0) {
+      const rawDir = totalDirScore / totalDirWeight;
+      const directionalAccuracy = (rawDir + 1) / 2;
+      let magnitudeRatio = directionalAccuracy;
+      if (totalMagWeight > 0) {
+        magnitudeRatio = totalMagScore / totalMagWeight;
+      }
+      const performanceRatio = directionalAccuracy * DIRECTION_WEIGHT + magnitudeRatio * MAGNITUDE_WEIGHT;
+
+      let targetWeight = 0.75 + Math.pow(performanceRatio, 1.5) * 1.25;
+
+      const activityRatio = activeContributionCount / sampleCount;
+      const activityMultiplier = 0.70 + 0.30 * Math.min(1.0, activityRatio);
+      targetWeight *= activityMultiplier;
+
+      let newWeight = 0.9 * factor.weight + 0.1 * targetWeight;
+
+      // [FIX] Exploration: epsilon‑greedy random adjustment
+      if (Math.random() < EXPLORATION_RATE) {
+        const randomDelta = (Math.random() - 0.5) * 2 * EXPLORATION_RANGE;
+        newWeight += randomDelta;
+      }
+
+      let bounded = Math.max(MIN_WEIGHT, Math.min(MAX_WEIGHT, newWeight));
+      const step = bounded - factor.weight;
+      const limited = Math.max(-effectiveMaxStep, Math.min(effectiveMaxStep, step));
+      const finalWeight = factor.weight + limited;
+
+      factor.weight = roundToTwo(finalWeight);
+      console.log(`📊 ${factor.name}: dirAcc ${(directionalAccuracy*100).toFixed(1)}%, magRatio ${(magnitudeRatio*100).toFixed(1)}%, perf ${(performanceRatio*100).toFixed(1)}%, act ${(activityRatio*100).toFixed(1)}%, regime ${regime}, samples ${sampleCount}, weight → ${factor.weight}`);
+    }
+  }
+  await saveAllPersistentData();
+}

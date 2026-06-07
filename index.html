@@ -196,8 +196,6 @@
 
         .support-number { color: #2ecc71; }
         .resistance-number { color: #e74c3c; }
-        .eos-number { color: #2ecc71; }
-        .eor-number { color: #e74c3c; }
 
         .badge {
             padding: 4px 14px;
@@ -302,12 +300,12 @@
             color: #f39c12;
         }
 
-        /* Option Chain Table */
+        /* Option Chain Table - Mobile Optimized with Centered Strike */
         .table-container {
             background: rgba(15, 25, 45, 0.35);
             backdrop-filter: blur(12px);
             border-radius: 28px;
-            padding: 24px;
+            padding: 20px;
             border: 1px solid rgba(56, 189, 248, 0.15);
             overflow-x: auto;
             margin-bottom: 28px;
@@ -317,12 +315,18 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            min-width: 800px;
+        }
+
+        /* On mobile, make table more compact and ensure strike is visually centered */
+        .option-table th, .option-table td {
+            text-align: center;
+            padding: 10px 6px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+            font-family: monospace;
+            font-weight: 500;
         }
 
         .option-table th {
-            text-align: center;
-            padding: 14px 10px;
             background: rgba(20, 30, 50, 0.6);
             color: #7f8ea3;
             font-weight: 600;
@@ -330,14 +334,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-        }
-
-        .option-table td {
-            text-align: center;
-            padding: 12px 8px;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.08);
-            font-family: monospace;
-            font-weight: 500;
         }
 
         .call-positive { color: #2ecc71; }
@@ -353,11 +349,12 @@
         }
 
         .atm-row {
-            background: rgba(56, 189, 248, 0.08);
+            background: rgba(56, 189, 248, 0.15);
+            position: relative;
         }
         .atm-row td {
-            border-top: 1px solid rgba(56, 189, 248, 0.3);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            border-top: 1px solid rgba(56, 189, 248, 0.4);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.4);
         }
 
         .last-update {
@@ -383,8 +380,19 @@
             .level-number { font-size: 1.1rem; }
             .trade-decision { font-size: 1.1rem; padding: 6px 18px; }
             .scenario-title { font-size: 1rem; }
-            .option-table { font-size: 0.7rem; min-width: 650px; }
-            .info-grid { grid-template-columns: 1fr; }
+            .option-table th, .option-table td { 
+                padding: 6px 3px; 
+                font-size: 0.65rem;
+            }
+            .strike-cell { font-size: 0.75rem; }
+            .option-table th { font-size: 0.6rem; }
+        }
+
+        @media (max-width: 480px) {
+            .option-table th, .option-table td { 
+                padding: 4px 2px; 
+                font-size: 0.6rem;
+            }
         }
     </style>
 </head>
@@ -411,21 +419,21 @@
         <div class="kpi-card"><div class="kpi-label">BIAS</div><div class="kpi-value" id="biasVal">---</div></div>
     </div>
 
-    <!-- Support & Resistance Panels -->
+    <!-- Support & Resistance Panels (renamed EOS/EOR to Support/Resistance) -->
     <div class="dual-panel">
         <div class="panel">
             <div class="panel-title">🟢 SUPPORT STRUCTURE</div>
             <div class="level-row"><span>Strike</span><span class="level-number support-number" id="supStrike">---</span></div>
             <div class="level-row"><span>State</span><span class="badge" id="supState">---</span></div>
             <div class="level-row"><span>OI Strength</span><span id="supStrength">---</span></div>
-            <div class="level-row"><span>EOS (Extension of Support)</span><span class="level-number eos-number" id="eosVal">---</span></div>
+            <div class="level-row"><span>📉 SUPPORT LEVEL</span><span class="level-number support-number" id="eosVal">---</span></div>
         </div>
         <div class="panel">
             <div class="panel-title">🔴 RESISTANCE STRUCTURE</div>
             <div class="level-row"><span>Strike</span><span class="level-number resistance-number" id="resStrike">---</span></div>
             <div class="level-row"><span>State</span><span class="badge" id="resState">---</span></div>
             <div class="level-row"><span>OI Strength</span><span id="resStrength">---</span></div>
-            <div class="level-row"><span>EOR (Extension of Resistance)</span><span class="level-number eor-number" id="eorVal">---</span></div>
+            <div class="level-row"><span>📈 RESISTANCE LEVEL</span><span class="level-number resistance-number" id="eorVal">---</span></div>
         </div>
     </div>
 
@@ -434,32 +442,34 @@
         <div id="scenarioContent">Loading analysis...</div>
     </div>
 
-    <!-- Option Chain Table (ATM ±7 Strikes) -->
+    <!-- Option Chain Table (ATM ±7 Strikes) - Centered ATM on mobile -->
     <div class="table-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
             <div class="panel-title">📋 OPTION CHAIN (ATM ±7 Strikes)</div>
             <div id="chainUpdateTime" class="last-update"></div>
         </div>
-        <table class="option-table" id="optionTable">
-            <thead>
-                <tr>
-                    <th>CALL OI</th>
-                    <th>CALL OI CHANGE</th>
-                    <th>CALL VOLUME</th>
-                    <th>STRIKE</th>
-                    <th>PUT VOLUME</th>
-                    <th>PUT OI CHANGE</th>
-                    <th>PUT OI</th>
-                </tr>
-            </thead>
-            <tbody id="optionTableBody">
-                <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td></tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table class="option-table" id="optionTable">
+                <thead>
+                    <tr>
+                        <th>CALL OI</th>
+                        <th>CALL OI CHANGE</th>
+                        <th>CALL VOLUME</th>
+                        <th>STRIKE</th>
+                        <th>PUT VOLUME</th>
+                        <th>PUT OI CHANGE</th>
+                        <th>PUT OI</th>
+                    </tr>
+                </thead>
+                <tbody id="optionTableBody">
+                    <tr><td colspan="7">Loading option chain... first run may take 5 minutes</td><tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="footer">
-        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes (ATM ±7 strikes only)
+        ⏱️ LTP data refreshes every 30 seconds | Option chain updates every 5 minutes | ATM strike centered for easy reading
     </div>
 </div>
 
@@ -474,8 +484,8 @@
             action: "WAIT",
             color: "wait",
             marketState: "Both support and resistance are STRONG or MODERATE. No clear direction.",
-            outcome: "Price oscillates between EOS and EOR. First touch to either level = high probability reversal.",
-            instruction: "BUY CE at EOS, BUY PE at EOR. Avoid middle zone.",
+            outcome: "Price oscillates between Support and Resistance levels. First touch = high probability reversal.",
+            instruction: "BUY CE at SUPPORT, BUY PE at RESISTANCE. Avoid middle zone.",
             riskNote: "Multiple touches increase breakout risk. First hit is safest."
         },
         2: {
@@ -485,8 +495,8 @@
             color: "buy-ce",
             marketState: "Support is STRONG. Resistance is Weak Towards Top (WTT).",
             outcome: "Buying pressure building. Market likely to move up.",
-            instruction: "BUY CE at EOS or every Put Diversion.",
-            riskNote: "Avoid selling Puts. First hit to EOS is safest."
+            instruction: "BUY CE at SUPPORT level or every Put Diversion.",
+            riskNote: "Avoid selling Puts. First hit to Support is safest."
         },
         3: {
             name: "BEARISH",
@@ -495,8 +505,8 @@
             color: "buy-pe",
             marketState: "Resistance is STRONG. Support is Weak Towards Bottom (WTB).",
             outcome: "Selling pressure building. Market likely to move down.",
-            instruction: "BUY PE at EOR or every Call Diversion.",
-            riskNote: "Avoid buying Calls. First hit to EOR is safest."
+            instruction: "BUY PE at RESISTANCE level or every Call Diversion.",
+            riskNote: "Avoid buying Calls. First hit to Resistance is safest."
         },
         4: {
             name: "BULLISH",
@@ -505,7 +515,7 @@
             color: "buy-ce",
             marketState: "Support is WTT (Weak Towards Top). Resistance is STRONG.",
             outcome: "Support shifting upward. Mild bullish momentum.",
-            instruction: "BUY CE at EOS. Target next upper diversion.",
+            instruction: "BUY CE at SUPPORT level. Target next upper diversion.",
             riskNote: "Avoid selling Puts. Watch for support migration."
         },
         5: {
@@ -514,8 +524,8 @@
             action: "BUY CE",
             color: "buy-ce",
             marketState: "Both sides WTT. Institutional money moving to higher strikes.",
-            outcome: "Unstoppable upward momentum. Breakout above EOR likely.",
-            instruction: "BUY CE aggressively at every dip. Hold past EOR.",
+            outcome: "Unstoppable upward momentum. Breakout above Resistance likely.",
+            instruction: "BUY CE aggressively at every dip. Hold past Resistance.",
             riskNote: "No PE buying. Trend is your friend."
         },
         6: {
@@ -534,8 +544,8 @@
             action: "BUY PE",
             color: "buy-pe",
             marketState: "Support WTB, Resistance STRONG. Downward pressure.",
-            outcome: "Bearish momentum. Breakdown below EOS likely.",
-            instruction: "BUY PE at EOR. Target lower diversion band.",
+            outcome: "Bearish momentum. Breakdown below Support likely.",
+            instruction: "BUY PE at RESISTANCE level. Target lower diversion band.",
             riskNote: "Avoid buying Calls. Let the downtrend play out."
         },
         8: {
@@ -554,8 +564,8 @@
             action: "BUY PE",
             color: "buy-pe",
             marketState: "Both sides WTB. Institutional money moving to lower strikes.",
-            outcome: "Unstoppable downward momentum. Breakdown below EOS likely.",
-            instruction: "BUY PE aggressively at every rise. Hold below EOS.",
+            outcome: "Unstoppable downward momentum. Breakdown below Support likely.",
+            instruction: "BUY PE aggressively at every rise. Hold below Support.",
             riskNote: "No CE buying. Aggressive short positioning."
         }
     };
@@ -654,7 +664,25 @@
         }
         // Sort by strike price
         strikes.sort((a, b) => a.strike - b.strike);
+        
+        // For mobile: ensure ATM strike is in the middle by keeping all strikes
+        // The scroll container will allow horizontal scroll, but the ATM row is highlighted
         return strikes;
+    }
+
+    // Scroll to ATM row on mobile (centers the ATM strike in the view)
+    function scrollToATMRow() {
+        // Small delay to ensure table is rendered
+        setTimeout(() => {
+            const atmRows = document.querySelectorAll('.atm-row');
+            if (atmRows.length > 0 && window.innerWidth < 768) {
+                atmRows[0].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'center'
+                });
+            }
+        }, 500);
     }
 
     // Render option chain table
@@ -687,27 +715,30 @@
             
             row.insertCell(6).innerHTML = formatNumber(s.putOi);
         });
+        
+        // Auto-scroll to ATM row on mobile for better UX
+        scrollToATMRow();
     }
 
-    // Render scenario analysis
+    // Render scenario analysis (updated to use Support/Resistance terminology)
     function renderScenarioAnalysis(data) {
         const spot = data.spot_price || 0;
-        const eos = data.levels?.eos || 0;
-        const eor = data.levels?.eor || 0;
+        const supportLevel = data.levels?.eos || 0;   // EOS renamed to Support Level
+        const resistanceLevel = data.levels?.eor || 0; // EOR renamed to Resistance Level
         const scenarioId = data.coa_scenario || 1;
         const rule = SCENARIO_RULES[scenarioId] || SCENARIO_RULES[1];
         
         const isLong = rule.action === 'BUY CE';
-        const entry = isLong ? eos : eor;
-        const target = isLong ? eor : eos;
-        const stop = isLong ? eos - 20 : eor + 20;
+        const entry = isLong ? supportLevel : resistanceLevel;
+        const target = isLong ? resistanceLevel : supportLevel;
+        const stop = isLong ? supportLevel - 20 : resistanceLevel + 20;
         const showLevels = rule.action === 'BUY CE' || rule.action === 'BUY PE';
         
-        const nearEOS = Math.abs(spot - eos) <= 20;
-        const nearEOR = Math.abs(spot - eor) <= 20;
-        const proximityMsg = nearEOS ? '⚠️ PRICE NEAR EOS – Watch for bounce / breakdown. FIRST HIT safest.' : 
-                             (nearEOR ? '⚠️ PRICE NEAR EOR – Watch for rejection / breakout. FIRST HIT safest.' : 
-                             '📍 Price between EOS and EOR. Wait for level test.');
+        const nearSupport = Math.abs(spot - supportLevel) <= 20;
+        const nearResistance = Math.abs(spot - resistanceLevel) <= 20;
+        const proximityMsg = nearSupport ? '⚠️ PRICE NEAR SUPPORT – Watch for bounce / breakdown. FIRST HIT safest.' : 
+                             (nearResistance ? '⚠️ PRICE NEAR RESISTANCE – Watch for rejection / breakout. FIRST HIT safest.' : 
+                             '📍 Price between Support and Resistance. Wait for level test.');
         
         const levelsHtml = showLevels ? `
             <div class="info-card">
@@ -798,7 +829,7 @@
             console.error('Option chain error:', err);
             const tbody = document.getElementById('optionTableBody');
             if (tbody) {
-                tbody.innerHTML = '<td><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes. Showing ATM ±7 strikes only.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7">⏳ Option chain loading... First GitHub Action run may take 5 minutes. Showing ATM ±7 strikes only.</td></tr>';
             }
         }
     }
@@ -810,10 +841,15 @@
     loadLTPData();
     loadOptionChain();
     
+    // Auto-refresh timers (page stays alive, data updates automatically)
     setInterval(loadLTPData, 30000);      // Update LTP data every 30 seconds
     setInterval(loadOptionChain, 300000); // Update option chain every 5 minutes
     
-    window.addEventListener('resize', () => createDots());
+    // Re-center on resize for mobile
+    window.addEventListener('resize', () => {
+        createDots();
+        scrollToATMRow();
+    });
 </script>
 </body>
 </html>

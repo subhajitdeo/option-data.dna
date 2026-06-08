@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-08T13:30:01.779Z",
+  "timestamp": "2026-06-08T13:33:01.931Z",
   "spot_price": 23123,
   "support": {
     "strike": 23000,
@@ -14,7 +14,7 @@
     "state": "STRONG"
   },
   "levels": {
-    "eos": 22951.5,
+    "eos": 22951.3,
     "eor": 23328.65
   },
   "pcr": 0.65,

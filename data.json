@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-09T03:00:02.495Z",
+  "timestamp": "2026-06-09T03:03:02.003Z",
   "spot_price": 23123,
   "support": {
     "strike": 23000,
@@ -17,7 +17,7 @@
     "eos": 22831.05,
     "eor": 23401.45
   },
-  "pcr": 0.85,
+  "pcr": 0.76,
   "coa_scenario": 1,
   "market_bias": "CONSOLIDATION",
   "trading_action": "WAIT",

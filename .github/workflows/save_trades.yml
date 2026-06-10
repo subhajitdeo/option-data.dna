@@ -2,7 +2,7 @@ name: Save Trades to GitHub
 
 on:
   schedule:
-    - cron: '*/5 3-10 * * 1-5'   # Every 5 min, Mon-Fri, 3:00-10:59 UTC
+ #(stoped)   - cron: '*/5 3-10 * * 1-5'   # Every 5 min, Mon-Fri, 3:00-10:59 UTC
   workflow_dispatch:
 
 jobs:

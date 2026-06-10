@@ -4,7 +4,7 @@ on:
   schedule:
     # Monday to Friday, every 5 minutes between 03:30 and 10:45 UTC
     # This covers Nifty market hours (9:00 AM to 4:45 PM IST)
-    - cron: '*/5 3-10 * * 1-5'
+  #(stoped)  - cron: '*/5 3-10 * * 1-5'
   workflow_dispatch:  # Manual trigger
 
 permissions:

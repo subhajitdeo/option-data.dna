@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-06-10T06:36:02.047Z",
-  "spot_price": 23380.85,
+  "timestamp": "2026-06-10T06:39:01.815Z",
+  "spot_price": 23391.35,
   "support": {
     "strike": 23300,
-    "oi": 10968685,
-    "strength": 77.07,
+    "oi": 10845510,
+    "strength": 77.6,
     "state": "STRONG"
   },
   "resistance": {
     "strike": 23400,
-    "oi": 6683560,
-    "strength": 87.73,
+    "oi": 6787690,
+    "strength": 86.9,
     "state": "STRONG"
   },
   "levels": {
-    "eos": 23164.55,
-    "eor": 23577.05
+    "eos": 23165.2,
+    "eor": 23582
   },
-  "pcr": 1.24,
+  "pcr": 1.22,
   "coa_scenario": 1,
   "market_bias": "CONSOLIDATION",
   "trading_action": "WAIT",

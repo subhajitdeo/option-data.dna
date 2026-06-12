@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-06-12T06:51:01.812Z",
-  "spot_price": 23349.5,
+  "timestamp": "2026-06-12T06:54:01.785Z",
+  "spot_price": 23359.7,
   "support": {
     "strike": 23300,
-    "oi": 11040835,
-    "strength": 83.75,
+    "oi": 11049285,
+    "strength": 83.4,
     "state": "STRONG"
   },
   "resistance": {
     "strike": 23400,
-    "oi": 17632290,
-    "strength": 91.32,
+    "oi": 17645550,
+    "strength": 90.85,
     "state": "STRONG"
   },
   "levels": {
-    "eos": 23187.3,
-    "eor": 23504.95
+    "eos": 23194.45,
+    "eor": 23510.9
   },
   "pcr": 0.94,
   "coa_scenario": 1,
